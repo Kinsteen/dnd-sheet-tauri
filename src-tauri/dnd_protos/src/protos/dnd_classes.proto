@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package proto.classes;
+
+option java_multiple_files = true;
+
+import 'cleric_subclasses.proto';
+
+message Artificer {
+
+}
+
+message Barbarian {
+
+}
+
+message Bard {
+
+}
+
+
+message Cleric {
+  string casting_ability = 1;
+
+  oneof subclass {
+     ClericLight light = 50;
+  }
+}
+
+message Druid {
+
+}
+
+message Fighter {
+
+}
+
+message Monk {
+
+}
+
+message Paladin {
+
+}
+
+message Ranger {
+
+}
+
+message Rogue {
+
+}
+
+message Sorcerer {
+
+}
+
+message Warlock {
+
+}
+
+message Wizard {
+
+}

@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package proto;
+
+option java_multiple_files = true;
+
+import 'dnd_classes.proto';
+
+enum Abilities {
+  Strength = 0;
+  Dexterity = 1;
+  Constitution = 2;
+  Intelligence = 3;
+  Wisdom = 4;
+  Charisma = 5;
+}
+
+message ClassData {
+  string name = 1;
+
+  int32 hit_die = 3;
+
+  repeated string armor_proficiencies = 4;
+  repeated string weapon_proficiencies = 5;
+  repeated string tool_proficiencies = 6;
+  repeated string saving_throws = 7;
+  repeated string skill_proficiencies = 8;
+  int32 num_skills_to_choose = 9;
+
+  map<int32, int32> num_cantrips_known = 10;
+
+  map<int32, SpellSlotData> spell_slots = 11;
+  int32 num_spell_to_prepare = 12; // TODO formula?
+
+  oneof custom_property {
+    classes.Artificer artificer = 50;
+    classes.Barbarian barbarian = 51;
+    classes.Bard bard = 52;
+    classes.Cleric cleric = 53;
+    classes.Druid druid = 54;
+    classes.Fighter fighter = 55;
+    classes.Monk monk = 56;
+    classes.Paladin paladin = 57;
+    classes.Ranger ranger = 58;
+    classes.Rogue rogue = 59;
+    classes.Sorcerer sorcerer = 60;
+    classes.Warlock warlock = 61;
+    classes.Wizard wizard = 62;
+  }
+}
+
+message SkillsData {
+  repeated SkillData skills = 1;
+}
+
+message SkillData {
+  string name = 1;
+  string ability = 2;
+}
+
+message SpellSlotData {
+  int32 level_one = 1;
+  int32 level_two = 2;
+  int32 level_three = 3;
+  int32 level_four = 4;
+  int32 level_five = 5;
+  int32 level_six = 6;
+  int32 level_seven = 7;
+  int32 level_eight = 8;
+  int32 level_nine = 9;
+}
+
+message RaceData {
+  string name = 1;
+
+  map<string, int32> ability_increases = 2;
+  int32 walking_speed = 3;
+  string size = 4;
+
+  repeated string languages_known = 5;
+
+
+  repeated string skill_proficiencies = 10;
+  int32 num_skills_to_choose = 11;
+
+
+
+  // TODO darkvision and stuff
+}

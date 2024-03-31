@@ -11,9 +11,9 @@ mod classes;
 mod races;
 
 fn write_proto(name: &str, data: &impl Message) {
-    let out_dir = env::var("OUT_DIR").unwrap();
-    let dest_path = Path::new(&out_dir).join(name);
-
+    let root_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let dest_path = Path::new(&root_dir).join("generated").join(name);
+    _ = fs::create_dir_all(dest_path.parent().unwrap());
     let mut buf = vec![];
     _ = data.encode(&mut buf);
 
@@ -21,6 +21,10 @@ fn write_proto(name: &str, data: &impl Message) {
 }
 
 fn main() -> Result<()> {
+    let root_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let dest_path = Path::new(&root_dir).join("generated");
+    _ = fs::remove_dir_all(dest_path);
+
     generate_classes();
     generate_races();
 

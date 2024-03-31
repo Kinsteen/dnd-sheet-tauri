@@ -1,15 +1,20 @@
+use rust_embed::RustEmbed;
+
+#[derive(RustEmbed)]
+#[folder = "$CARGO_MANIFEST_DIR/generated"]
+pub struct Asset;
+
 pub mod calculators {
     pub mod abilities;
 }
 
-mod tests {
-    mod test_proto_helpers;
+pub mod loaders {
+    pub mod r#static;
 }
 
-pub mod helpers {
-    pub fn str_vec_to_string_vec(v: Vec<&str>) -> Vec<String> {
-        v.iter().map(|x| x.to_string()).collect()
-    }
+mod tests {
+    mod test_proto_helpers;
+    mod test_calculators;
 }
 
 pub mod ui_data {

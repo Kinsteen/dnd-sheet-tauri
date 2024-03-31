@@ -94,17 +94,33 @@ fn main() {
     calculate("dextazeaezerity", &c);
     calculate("dexterity", &c);
 
-    let v = include_bytes!(concat!(env!("OUT_DIR"), "/light_cleric"));
+    // let v = dnd_sheet_tauri::Asset::get("light_cleric").unwrap().data;
+    // let test = v.as_ref();
+    // if let Ok(test) = ClassData::decode(test) {
+    //     println!("{}", test.name);
+    //     println!("{}", test.hit_die);
+    //     if let Some(class_data::CustomProperty::Cleric(c)) = test.custom_property {
+    //         println!("{}", c.casting_ability);
+    //         if let Some(cleric::Subclass::Light(_l)) = c.subclass {
+    //             println!("Found cleric light subclass!");
+    //         }
+    //     }
+    // }
+    
+    if let Some(message) = dnd_sheet_tauri::read_proto!("classes/light_cleric", ClassData) {
+        println!("Decoded message!");
+        println!("{}", message.name);
+        println!("{}", message.hit_die);
+    } else {
+        eprintln!("oops...");
+    }
 
-    if let Ok(test) = ClassData::decode(&v[..]) {
-        println!("{}", test.name);
-        println!("{}", test.hit_die);
-        if let Some(class_data::CustomProperty::Cleric(c)) = test.custom_property {
-            println!("{}", c.casting_ability);
-            if let Some(cleric::Subclass::Light(l)) = c.subclass {
-                println!("Found cleric light subclass!");
-            }
-        }
+    if let Some(message) = dnd_sheet_tauri::read_proto!("races/godwalker_ra", RaceData) {
+        println!("Decoded message!");
+        println!("{}", message.name);
+        println!("{}", message.size);
+    } else {
+        eprintln!("oops...");
     }
 
     tauri::Builder::default()

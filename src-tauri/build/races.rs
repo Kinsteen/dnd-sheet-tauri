@@ -19,6 +19,6 @@ pub fn generate_races() {
         num_skills_to_choose: 1,
     };
 
-    write_proto("godwalker_ra", &goldwalker_ra);
+    write_proto("races/godwalker_ra", &goldwalker_ra);
     println!("cargo::rerun-if-changed=build/races.rs");
 }

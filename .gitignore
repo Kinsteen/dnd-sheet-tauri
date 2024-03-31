@@ -1,3 +1,5 @@
+src-tauri/generated/*
+
 # Logs
 logs
 *.log

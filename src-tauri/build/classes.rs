@@ -37,6 +37,6 @@ pub fn generate_classes() {
         t.subclass = Some(classes::cleric::Subclass::Light(ClericLight {}));
     }
 
-    write_proto("light_cleric", &light_cleric);
+    write_proto("classes/light_cleric", &light_cleric);
     println!("cargo::rerun-if-changed=build/classes.rs");
 }

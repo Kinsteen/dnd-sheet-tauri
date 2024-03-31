@@ -1,10 +1,9 @@
 #[cfg(test)]
-
 #[test]
 fn cantrips_known_test() {
+    use dnd_protos::proto_helpers::str_vec_to_string_vec;
     use dnd_protos::protos::*;
     use std::collections::HashMap;
-    use dnd_protos::proto_helpers::str_vec_to_string_vec;
 
     let cleric = ClassData {
         name: "test".to_string(),

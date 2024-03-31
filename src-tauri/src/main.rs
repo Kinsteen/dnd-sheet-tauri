@@ -1,98 +1,158 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use dnd_protos::protos::classes::*;
+use dnd_protos::proto_helpers::str_vec_to_string_vec;
 use dnd_protos::protos::*;
-use dnd_sheet_tauri::{calculators::abilities::calculate, ui_data::*};
-use prost::Message;
-use std::collections::HashMap;
+use dnd_sheet_tauri::{calculators::{abilities::{calculate, calculate_modifier, calculate_modifier_string, format_modifier}, classes::get_proficiency_bonus, utils::parse_expression}, read_proto, ui_data::*};
+use tauri::State;
+use std::{collections::HashMap, vec};
 
 #[tauri::command]
-fn get_abilities_data() -> Vec<AbilitiesDataUI> {
-    // TODO load from proto and stuff
-    let vec = vec![
-        AbilitiesDataUI {
-            name: "Strength",
-            modifier: "+2",
-            total: "12",
-            saving_throw: false,
-            saving_throw_modifier: "+2",
-        },
-        AbilitiesDataUI {
-            name: "Dexterity",
-            modifier: "+2",
-            total: "12",
-            saving_throw: false,
-            saving_throw_modifier: "+2",
-        },
-        AbilitiesDataUI {
-            name: "Constitution",
-            modifier: "+2",
-            total: "12",
-            saving_throw: false,
-            saving_throw_modifier: "+2",
-        },
-        AbilitiesDataUI {
-            name: "Intelligence",
-            modifier: "+2",
-            total: "12",
-            saving_throw: false,
-            saving_throw_modifier: "+2",
-        },
-        AbilitiesDataUI {
-            name: "Wisdom",
-            modifier: "+2",
-            total: "12",
-            saving_throw: true,
-            saving_throw_modifier: "+4",
-        },
-        AbilitiesDataUI {
-            name: "Charisma",
-            modifier: "+2",
-            total: "12",
-            saving_throw: true,
-            saving_throw_modifier: "+4",
-        },
-    ];
+fn get_abilities_data(user_data: State<UserData>) -> Vec<AbilitiesDataUI> {
+    let mut vec = vec![];
+    for ability in &user_data.sheet.abilities {
+        let modifier = calculate_modifier_string(&ability.name, &user_data.sheet).unwrap();
+        let total = format!("{}", calculate(&ability.name, &user_data.sheet).unwrap());
+
+        let mut proficient = false;
+        let full_class_name = format!("classes/{}_{}", user_data.sheet.classes.first().unwrap().subclass, user_data.sheet.classes.first().unwrap().name);
+        if let Some(class_data) = read_proto!(full_class_name, ClassData) {
+            if class_data.saving_throws.contains(&ability.name) {
+                proficient = true;
+            }
+        } else {
+            eprintln!("Didn't find {}", full_class_name);
+        }
+
+        vec.push(AbilitiesDataUI {
+            name: ability.name.clone(),
+            modifier,
+            total,
+            saving_throw: proficient,
+            saving_throw_modifier: "+2".to_string()
+        })
+    }
 
     vec
 }
 
 #[tauri::command]
-fn get_skills_data() -> Vec<SkillDataUI> {
-    // TODO load from proto and stuff
-    let vec = vec![
-        SkillDataUI {
-            name: "Acrobatics",
-            modifier: "+2",
-            proficient: false,
-        },
-        SkillDataUI {
-            name: "azeazeaze",
-            modifier: "+4",
-            proficient: true,
-        },
-    ];
+fn get_skills_data(user_data: State<UserData>) -> Vec<SkillDataUI> {
+    let mut vec = vec![];
+
+    if let Some(skills_data) = read_proto!("skills", SkillsData) {
+        for skill_data in skills_data.skills {
+            let mut modifier = calculate_modifier(skill_data.ability().as_str_name().to_lowercase().as_str(), &user_data.sheet).unwrap_or(0);
+            
+            if user_data.sheet.skills.contains(&skill_data.name) {
+                modifier += get_proficiency_bonus(&user_data.sheet);
+            }
+
+            vec.push(SkillDataUI {
+                name: skill_data.name.clone(),
+                modifier: format_modifier(modifier),
+                proficient: user_data.sheet.skills.contains(&skill_data.name),
+            })
+        }
+    }
 
     vec
+}
+
+#[tauri::command]
+fn get_counters(user_data: State<UserData>) -> Vec<CounterUI> {
+    use dnd_sheet_tauri::calculators::utils::sparse_map_get;
+
+    let mut vec = vec![];
+
+    let classes = &user_data.sheet.classes;
+
+    for class in classes {
+        let full_class_name = format!("classes/{}_{}", class.subclass, class.name);
+        if let Some(class_data) = read_proto!(full_class_name, ClassData) {
+            for counter in class_data.counters {
+                let mut max_uses = 0;
+                if let Some(stuff) = sparse_map_get(5, &counter.max_uses) {
+                    max_uses = parse_expression(stuff, &user_data.sheet).expect("Parsing didn't go well!");
+                }
+                vec.push(CounterUI {
+                    name: counter.name,
+                    used: 0,
+                    max_uses: max_uses as i32
+                });
+            }
+        } else {
+            eprintln!("Didn't find {}", full_class_name);
+        }
+    }
+
+    vec
+}
+
+struct UserData {
+    sheet: CharacterSheet,
 }
 
 fn main() {
     let c = CharacterSheet {
         character_name: "Test".to_string(),
-        classes: vec![],
-        race: None,
-        abilities: vec![Ability {
-            name: "dexterity".to_string(),
-            base_value: 10,
-        }],
-        custom_ability_increases: HashMap::new(),
-        skills: vec![],
+        classes: vec![
+            Class {
+                name: "cleric".to_string(),
+                subclass: "light".to_string(),
+                level: 3,
+                used_cantrips: 0,
+                spell_slots: vec![],
+                chosen_skills: vec![]
+            }
+        ],
+        race: Some(Race { name: "races/godwalker_ra".to_string() }),
+        abilities: vec![
+            Ability {
+                name: "strength".to_string(),
+                base_value: 12,
+            },
+            Ability {
+                name: "dexterity".to_string(),
+                base_value: 12,
+            },
+            Ability {
+                name: "constitution".to_string(),
+                base_value: 12,
+            },
+            Ability {
+                name: "intelligence".to_string(),
+                base_value: 13,
+            },
+            Ability {
+                name: "wisdom".to_string(),
+                base_value: 15,
+            },
+            Ability {
+                name: "charisma".to_string(),
+                base_value: 9,
+            },
+        ],
+        custom_ability_increases: HashMap::from([("wisdom".to_string(), 1)]),
+        skills: str_vec_to_string_vec(vec!["history", "medicine"]),
         custom_languages: vec![],
+        counters: vec![]
     };
 
-    calculate("dextazeaezerity", &c);
-    calculate("dexterity", &c);
+    tauri::Builder::default()
+        .manage(UserData { sheet: c.clone() })
+        .setup(|app| {
+            println!("{:#?}", app.path_resolver().app_data_dir().unwrap());
+            let _test = app.path_resolver().app_data_dir().unwrap().clone();
+            Ok(())
+        })
+        .invoke_handler(tauri::generate_handler![
+            get_abilities_data,
+            get_skills_data,
+            get_counters
+        ])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
 
     // let v = dnd_sheet_tauri::Asset::get("light_cleric").unwrap().data;
     // let test = v.as_ref();
@@ -106,7 +166,7 @@ fn main() {
     //         }
     //     }
     // }
-    
+
     if let Some(message) = dnd_sheet_tauri::read_proto!("classes/light_cleric", ClassData) {
         println!("Decoded message!");
         println!("{}", message.name);
@@ -122,12 +182,4 @@ fn main() {
     } else {
         eprintln!("oops...");
     }
-
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![
-            get_abilities_data,
-            get_skills_data
-        ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
 }

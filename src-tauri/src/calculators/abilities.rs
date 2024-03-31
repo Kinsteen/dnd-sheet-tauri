@@ -26,19 +26,18 @@ pub fn calculate(name: &str, sheet: &CharacterSheet) -> Option<i32> {
     }
 }
 
-pub fn calculate_bonus(name: &str, sheet: &CharacterSheet) -> Option<String> {
-    let total = calculate(name, sheet);
-
-    if let Some(total_int) = total {
-        let modifier = (total_int - 10) / 2;
-        println!("{}", total_int - 10);
-        println!("{}", modifier);
-        if modifier >= 0 {
-            Some(format!("+{}", modifier))
-        } else {
-            Some(format!("{}", modifier))
-        }
+pub fn format_modifier(modifier: i32) -> String {
+    if modifier >= 0 {
+        format!("+{}", modifier)
     } else {
-        None
+        format!("{}", modifier)
     }
+}
+
+pub fn calculate_modifier(name: &str, sheet: &CharacterSheet) -> Option<i32> {
+    calculate(name, sheet).map(|total| (((total - 10) as f32) / 2f32).floor() as i32)
+}
+
+pub fn calculate_modifier_string(name: &str, sheet: &CharacterSheet) -> Option<String> {
+    calculate_modifier(name, sheet).map(format_modifier)
 }

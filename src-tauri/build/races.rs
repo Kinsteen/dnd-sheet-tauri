@@ -10,7 +10,7 @@ pub fn generate_races() {
         name: "godwalker_ra".to_string(),
         ability_increases: HashMap::from([
             ("wisdom".to_string(), 2),
-            ("intelligence".to_string(), 1),
+            ("constitution".to_string(), 1),
         ]),
         walking_speed: 30,
         size: "medium".to_string(),

@@ -16,13 +16,14 @@ message CharacterSheet {
   repeated string skills = 20;
 
   repeated string custom_languages = 50;
+
+  repeated Counters counters = 100;
 }
 
 message Class {
   string name = 1;
   string subclass = 2;
   int32 level = 3;
-  int32 proficiency_bonus = 4;
 
   int32 used_cantrips = 20;
   repeated SpellSlot spell_slots = 21;
@@ -44,4 +45,9 @@ message SpellSlot {
 message Ability {
   string name = 1;
   int32 base_value = 2;
+}
+
+message Counters {
+  string name = 1;
+  int32 uses = 2;
 }

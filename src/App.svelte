@@ -6,6 +6,7 @@
 
   let abilitiesData = []
   let skillsData = []
+  let counters = []
 
   async function loadAbilities() {
     abilitiesData = await invoke("get_abilities_data")
@@ -15,8 +16,14 @@
     skillsData = await invoke("get_skills_data")
   }
 
+  async function loadCounters() {
+    counters = await invoke("get_counters")
+    console.log(counters)
+  }
+
   loadAbilities()
   loadSkills()
+  loadCounters()
 </script>
 
 <main class="container">
@@ -54,7 +61,11 @@
           <button>+</button>
         </div>
       </Card>
-      <Card>aaa</Card>
+      {#each counters as counter }
+        <Card title={counter.name}>
+          {counter.max_uses}
+        </Card>
+      {/each}
     </div>
   </div>
   <div class="footer">

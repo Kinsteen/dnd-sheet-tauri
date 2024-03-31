@@ -6,9 +6,11 @@ use std::path::Path;
 
 use classes::*;
 use races::*;
+use skills::*;
 
 mod classes;
 mod races;
+mod skills;
 
 fn write_proto(name: &str, data: &impl Message) {
     let root_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
@@ -27,6 +29,7 @@ fn main() -> Result<()> {
 
     generate_classes();
     generate_races();
+    generate_skills();
 
     tauri_build::build();
 

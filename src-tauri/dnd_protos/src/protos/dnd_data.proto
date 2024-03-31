@@ -6,13 +6,13 @@ option java_multiple_files = true;
 
 import 'dnd_classes.proto';
 
-enum Abilities {
-  Strength = 0;
-  Dexterity = 1;
-  Constitution = 2;
-  Intelligence = 3;
-  Wisdom = 4;
-  Charisma = 5;
+enum AbilityEnum {
+  STRENGTH = 0;
+  DEXTERITY = 1;
+  CONSTITUTION = 2;
+  INTELLIGENCE = 3;
+  WISDOM = 4;
+  CHARISMA = 5;
 }
 
 message ClassData {
@@ -30,7 +30,9 @@ message ClassData {
   map<int32, int32> num_cantrips_known = 10;
 
   map<int32, SpellSlotData> spell_slots = 11;
-  int32 num_spell_to_prepare = 12; // TODO formula?
+  string num_spell_to_prepare = 12; // TODO formula?
+
+  repeated CounterData counters = 20;
 
   oneof custom_property {
     classes.Artificer artificer = 50;
@@ -49,13 +51,21 @@ message ClassData {
   }
 }
 
+message CounterData {
+  string name = 1;
+  map<int32, string> max_uses = 3;
+  bool resets_on_short_rest = 4;
+  bool resets_on_long_rest = 5;
+  string custom_reset = 6;
+}
+
 message SkillsData {
   repeated SkillData skills = 1;
 }
 
 message SkillData {
   string name = 1;
-  string ability = 2;
+  AbilityEnum ability = 2;
 }
 
 message SpellSlotData {

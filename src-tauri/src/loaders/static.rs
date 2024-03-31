@@ -1,17 +1,20 @@
 #[macro_export]
 macro_rules! read_proto {
-    ($file_name:expr, $message_type:ident) => {
-        {
-            use $crate::Asset;
-            use prost::Message;
+    // TODO cache? Technically, we read binary, so maybe not useful...
+    ($file_name:expr, $message_type:ident) => {{
+        use prost::Message;
+        use $crate::GeneratedAsset;
 
-            let data = Asset::get(&$file_name[..]).unwrap().data;
-            let data_ptr = data.as_ref();   
+        if let Some(file) = GeneratedAsset::get(&$file_name[..]) {
+            let data = file.data;
+            let data_ptr = data.as_ref();
             if let Ok(message) = $message_type::decode(data_ptr) {
                 Some(message)
             } else {
                 None
             }
+        } else {
+            None
         }
-    };
+    }};
 }

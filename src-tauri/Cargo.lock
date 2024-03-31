@@ -686,6 +686,7 @@ name = "dnd-sheet-tauri"
 version = "0.0.0"
 dependencies = [
  "dnd_protos",
+ "eval",
  "prost",
  "prost-types",
  "rust-embed",
@@ -777,6 +778,17 @@ checksum = "a258e46cdc063eb8519c00b9fc845fc47bcfca4130e2f08e88665ceda8474245"
 dependencies = [
  "libc",
  "windows-sys 0.52.0",
+]
+
+[[package]]
+name = "eval"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ba90c19bed0c67afb0a24340b42d13ddddcb5413c4c17a04c11871bd6b572c42"
+dependencies = [
+ "quick-error",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -2349,6 +2361,12 @@ checksum = "193898f59edcf43c26227dcd4c8427f00d99d61e95dcde58dabd49fa291d470e"
 dependencies = [
  "prost",
 ]
+
+[[package]]
+name = "quick-error"
+version = "1.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a1d01941d82fa2ab50be1e79e6714289dd7cde78eba4c074bc5a4374f650dfe0"
 
 [[package]]
 name = "quick-xml"

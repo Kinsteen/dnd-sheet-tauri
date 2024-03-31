@@ -23,6 +23,7 @@ fn calculate_abilities_test() {
         custom_ability_increases: HashMap::new(),
         skills: vec![],
         custom_languages: vec![],
+        counters: vec![]
     };
 
     assert_eq!(calculate("dexterity", &sheet_no_race), Some(10));
@@ -30,7 +31,7 @@ fn calculate_abilities_test() {
 
     let mut sheet_with_race = sheet_no_race.clone();
     sheet_with_race.race = Some(Race {
-        name: "godwalker_ra".to_string(),
+        name: "races/godwalker_ra".to_string(),
     });
 
     assert_eq!(calculate("dexterity", &sheet_with_race), Some(10));
@@ -67,6 +68,7 @@ fn calculate_modifier_string_test() {
         custom_ability_increases: HashMap::new(),
         skills: vec![],
         custom_languages: vec![],
+        counters: vec![]
     };
 
     assert_eq!(
@@ -80,7 +82,7 @@ fn calculate_modifier_string_test() {
 
     let mut sheet_with_race = sheet_no_race.clone();
     sheet_with_race.race = Some(Race {
-        name: "godwalker_ra".to_string(),
+        name: "races/godwalker_ra".to_string(),
     });
 
     assert_eq!(

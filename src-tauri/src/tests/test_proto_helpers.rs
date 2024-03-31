@@ -22,8 +22,9 @@ fn cantrips_known_test() {
         num_skills_to_choose: 2,
         num_cantrips_known: HashMap::from([(1, 3), (4, 4), (10, 5)]),
         spell_slots: HashMap::from([]),
-        num_spell_to_prepare: 3,
+        num_spell_to_prepare: "1".to_string(),
         custom_property: None,
+        counters: vec![]
     };
 
     assert_eq!(cleric.get_cantrips_known(1), 3);

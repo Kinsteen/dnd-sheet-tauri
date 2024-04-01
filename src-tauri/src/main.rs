@@ -4,8 +4,9 @@
 use dnd_protos::proto_helpers::str_vec_to_string_vec;
 use dnd_protos::protos::*;
 use dnd_sheet_tauri::{calculators::{abilities::{calculate, calculate_modifier, calculate_modifier_string, format_modifier}, classes::get_proficiency_bonus, utils::parse_expression}, read_proto, ui_data::*};
-use tauri::State;
-use std::{collections::HashMap, vec};
+use prost::Message;
+use tauri::{Manager, State};
+use std::{collections::HashMap, fs, path::Path, vec};
 
 #[tauri::command]
 fn get_abilities_data(user_data: State<UserData>) -> Vec<AbilitiesDataUI> {
@@ -140,10 +141,22 @@ fn main() {
     };
 
     tauri::Builder::default()
-        .manage(UserData { sheet: c.clone() })
-        .setup(|app| {
+        .setup(move |app| {
             println!("{:#?}", app.path_resolver().app_data_dir().unwrap());
-            let _test = app.path_resolver().app_data_dir().unwrap().clone();
+            let data_dir = app.path_resolver().app_data_dir().unwrap().clone();
+            let user_data_path = data_dir.as_path().join("user_data");
+            if Path::exists(user_data_path.as_path()) {
+                println!("Found user data, loading");
+                let buf = fs::read(user_data_path).unwrap();
+                let sheet = CharacterSheet::decode(buf.as_ref()).unwrap();
+                app.manage(UserData { sheet });
+            } else {
+                println!("Didn't find user data");
+                app.manage(UserData { sheet: c.clone() });
+                let mut buf = vec![];
+                _ = c.encode(&mut buf);
+                _ = fs::write(user_data_path, buf);
+            }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

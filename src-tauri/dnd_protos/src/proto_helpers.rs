@@ -9,11 +9,11 @@ impl ClassData {
 
         let mut temp_level = level;
 
-        while !self.num_cantrips_known.contains_key(&temp_level) {
+        while !self.spellcasting.clone().unwrap().num_cantrips_known.contains_key(&temp_level) {
             temp_level -= 1;
         }
 
-        *self.num_cantrips_known.get(&temp_level).unwrap()
+        *self.spellcasting.clone().unwrap().num_cantrips_known.get(&temp_level).unwrap()
     }
 }
 

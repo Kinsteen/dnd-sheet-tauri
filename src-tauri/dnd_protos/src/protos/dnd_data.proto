@@ -27,10 +27,7 @@ message ClassData {
   repeated string skill_proficiencies = 8;
   int32 num_skills_to_choose = 9;
 
-  map<int32, int32> num_cantrips_known = 10;
-
-  map<int32, SpellSlotData> spell_slots = 11;
-  string num_spell_to_prepare = 12; // TODO formula?
+  optional SpellCastingData spellcasting = 10;
 
   repeated CounterData counters = 20;
 
@@ -68,6 +65,23 @@ message SkillData {
   AbilityEnum ability = 2;
 }
 
+message SpellCastingData {
+  string casting_ability = 1;
+
+  map<int32, int32> num_cantrips_known = 10;
+
+  map<int32, SpellSlotData> spell_slots = 20;
+
+  oneof num_spell_to_prepare {
+    string formula = 21;
+    LevelMap level_map = 22;
+  }
+}
+
+message LevelMap {
+  map<int32, int32> level_map = 1;
+}
+
 message SpellSlotData {
   int32 level_one = 1;
   int32 level_two = 2;
@@ -89,11 +103,14 @@ message RaceData {
 
   repeated string languages_known = 5;
 
-
   repeated string skill_proficiencies = 10;
   int32 num_skills_to_choose = 11;
 
+  repeated string tool_proficiencies = 20;
+  int32 num_tools_to_choose = 21;
 
+  repeated string weapon_proficiencies = 30;
+  int32 num_weapons_to_choose = 31;
 
-  // TODO darkvision and stuff
+  optional int32 darkvision_range = 40;
 }

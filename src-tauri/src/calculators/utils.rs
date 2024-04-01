@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use dnd_protos::protos::*;
-use eval::eval;
+use evalexpr::{eval_int, EvalexprError};
 
 use super::{abilities::calculate_modifier, classes::get_total_level};
 
@@ -16,8 +16,7 @@ pub fn sparse_map_get<T>(index: i32, map: &HashMap<i32, T>) -> Option<&T> {
     map.get(&temp_index)
 }
 
-// TODO test this function
-pub fn parse_expression(expression: &str, sheet: &CharacterSheet) -> Result<i64, eval::Error> {
+pub fn parse_expression(expression: &str, sheet: &CharacterSheet) -> Result<i64, EvalexprError> {
     let mut final_expr: String = String::from(expression);
 
     final_expr = final_expr.replace(
@@ -57,10 +56,7 @@ pub fn parse_expression(expression: &str, sheet: &CharacterSheet) -> Result<i64,
     );
     final_expr = final_expr.replace(
         "cha_mod",
-        calculate_modifier("charisma", sheet)
-            .unwrap_or(0)
-            .to_string()
-            .as_str(),
+        format!("({})", calculate_modifier("charisma", sheet).unwrap_or(0)).as_str(),
     );
 
     final_expr = final_expr.replace("total_level", get_total_level(sheet).to_string().as_str());
@@ -71,9 +67,5 @@ pub fn parse_expression(expression: &str, sheet: &CharacterSheet) -> Result<i64,
         final_expr = final_expr.replace(&to_replace, class.level.to_string().as_str());
     }
 
-    if let eval::Value::Number(result) = eval(&final_expr)? {
-        Ok(result.as_i64().unwrap())
-    } else {
-        Err(eval::Error::Custom("Couldn't replace values".to_string()))
-    }
+    eval_int(&final_expr)
 }

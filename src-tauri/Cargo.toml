@@ -27,7 +27,7 @@ tonic = "0.11"
 prost = "0.12"
 prost-types = "0.12"
 rust-embed= { version = "8.3.0", features = ["interpolate-folder-path"] }
-eval = "0.4"
+evalexpr = "11.3"
 
 [dependencies.dnd_protos]
 path = "dnd_protos/"

@@ -10,6 +10,9 @@ fn calculate_abilities_test() {
         character_name: "Test".to_string(),
         classes: vec![],
         race: None,
+        health: 10,
+        temp_health: None,
+        health_system: None,
         abilities: vec![
             Ability {
                 name: "dexterity".to_string(),
@@ -55,6 +58,9 @@ fn calculate_modifier_string_test() {
         character_name: "Test".to_string(),
         classes: vec![],
         race: None,
+        health: 10,
+        temp_health: None,
+        health_system: None,
         abilities: vec![
             Ability {
                 name: "dexterity".to_string(),

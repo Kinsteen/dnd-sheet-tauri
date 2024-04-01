@@ -4,7 +4,7 @@ fn cantrips_known_test() {
     use crate::helpers::utils::str_vec_to_string_vec;
     use dnd_protos::protos::*;
     use std::collections::HashMap;
-    
+
     use crate::helpers::classdata::ClassDataHelper;
 
     let cleric = ClassData {
@@ -26,7 +26,9 @@ fn cantrips_known_test() {
             casting_ability: "wisdom".to_string(),
             num_cantrips_known: HashMap::from([(1, 3), (4, 4), (10, 5)]),
             spell_slots: HashMap::from([]),
-            num_spell_to_prepare: Some(spell_casting_data::NumSpellToPrepare::Formula("1".to_string())),
+            num_spell_to_prepare: Some(spell_casting_data::NumSpellToPrepare::Formula(
+                "1".to_string(),
+            )),
         }),
         custom_property: None,
         counters: vec![],

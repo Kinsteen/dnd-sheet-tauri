@@ -1,3 +1,5 @@
+use dnd_protos::protos::*;
+
 #[macro_export]
 macro_rules! read_proto {
     // TODO cache? Technically, we read binary, so maybe not useful...
@@ -17,4 +19,15 @@ macro_rules! read_proto {
             None
         }
     }};
+}
+
+pub fn read_class(class: &Class) -> Option<ClassData> {
+    if !class.subclass.is_empty() {
+        read_proto!(
+            format!("classes/{}_{}", class.subclass, class.name),
+            ClassData
+        )
+    } else {
+        read_proto!(format!("classes/{}", class.name), ClassData)
+    }
 }

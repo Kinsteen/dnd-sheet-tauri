@@ -8,6 +8,14 @@ message CharacterSheet {
   repeated Class classes = 2;
   Race race = 3;
 
+  int32 health = 4;
+  optional int32 temp_health = 5;
+
+  oneof health_system {
+    bool mean = 6;
+    HealthRolls rolls = 7;
+  }
+
   repeated Ability abilities = 10;
   map<string, int32> custom_ability_increases = 11;
 
@@ -18,6 +26,10 @@ message CharacterSheet {
   repeated string custom_languages = 50;
 
   repeated Counters counters = 100;
+}
+
+message HealthRolls {
+  repeated int32 rolls = 1;
 }
 
 message Class {

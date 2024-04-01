@@ -3,12 +3,13 @@
 
 use dnd_protos::protos::*;
 use dnd_sheet_tauri::{
-    helpers::utils::str_vec_to_string_vec,
     calculators::{
         abilities::{calculate, calculate_modifier, calculate_modifier_string, format_modifier},
         classes::get_proficiency_bonus,
+        health::get_max_health,
         utils::parse_expression,
     },
+    helpers::utils::str_vec_to_string_vec,
     read_proto,
     ui_data::*,
 };
@@ -114,6 +115,9 @@ struct UserData {
 fn main() {
     let c = CharacterSheet {
         character_name: "Test".to_string(),
+        health: 15,
+        temp_health: None,
+        health_system: Some(character_sheet::HealthSystem::Mean(true)),
         classes: vec![Class {
             name: "cleric".to_string(),
             subclass: "light".to_string(),
@@ -156,6 +160,9 @@ fn main() {
         custom_languages: vec![],
         counters: vec![],
     };
+
+    println!("level: {}", c.classes.first().unwrap().level);
+    println!("max health: {}", get_max_health(&c));
 
     tauri::Builder::default()
         .setup(move |app| {

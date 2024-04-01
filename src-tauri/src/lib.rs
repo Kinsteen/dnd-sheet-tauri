@@ -7,6 +7,7 @@ pub struct GeneratedAsset;
 pub mod calculators {
     pub mod abilities;
     pub mod classes;
+    pub mod health;
     pub mod utils;
 }
 
@@ -20,7 +21,13 @@ pub mod loaders {
 }
 
 mod tests {
-    mod test_calculators;
+    mod calculators {
+        mod test_abilities;
+        mod test_classes;
+        mod test_health;
+        mod test_utils;
+    }
+
     mod test_proto_helpers;
 }
 

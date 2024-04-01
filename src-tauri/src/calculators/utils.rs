@@ -5,7 +5,7 @@ use eval::eval;
 
 use super::{abilities::calculate_modifier, classes::get_total_level};
 
-// TODO test this function
+// Tested with get_cantrips_known
 pub fn sparse_map_get<T>(index: i32, map: &HashMap<i32, T>) -> Option<&T> {
     let mut temp_index = index;
 

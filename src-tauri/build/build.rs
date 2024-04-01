@@ -12,6 +12,10 @@ mod classes;
 mod races;
 mod skills;
 
+pub fn str_vec_to_string_vec(v: Vec<&str>) -> Vec<String> {
+    v.iter().map(|x| x.to_string()).collect()
+}
+
 fn write_proto(name: &str, data: &impl Message) {
     let root_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let dest_path = Path::new(&root_dir).join("generated").join(name);

@@ -13,6 +13,6 @@ pub fn get_proficiency_bonus(sheet: &CharacterSheet) -> i32 {
         9..=12 => 4,
         13..=16 => 5,
         17..=20 => 6,
-        _ => 0
+        _ => 0,
     }
 }

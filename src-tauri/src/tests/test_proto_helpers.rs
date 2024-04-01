@@ -1,9 +1,11 @@
 #[cfg(test)]
 #[test]
 fn cantrips_known_test() {
-    use dnd_protos::proto_helpers::str_vec_to_string_vec;
+    use crate::helpers::utils::str_vec_to_string_vec;
     use dnd_protos::protos::*;
     use std::collections::HashMap;
+    
+    use crate::helpers::classdata::ClassDataHelper;
 
     let cleric = ClassData {
         name: "test".to_string(),
@@ -20,11 +22,14 @@ fn cantrips_known_test() {
             "religion",
         ]),
         num_skills_to_choose: 2,
-        num_cantrips_known: HashMap::from([(1, 3), (4, 4), (10, 5)]),
-        spell_slots: HashMap::from([]),
-        num_spell_to_prepare: "1".to_string(),
+        spellcasting: Some(SpellCastingData {
+            casting_ability: "wisdom".to_string(),
+            num_cantrips_known: HashMap::from([(1, 3), (4, 4), (10, 5)]),
+            spell_slots: HashMap::from([]),
+            num_spell_to_prepare: Some(spell_casting_data::NumSpellToPrepare::Formula("1".to_string())),
+        }),
         custom_property: None,
-        counters: vec![]
+        counters: vec![],
     };
 
     assert_eq!(cleric.get_cantrips_known(1), 3);

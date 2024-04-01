@@ -10,6 +10,11 @@ pub mod calculators {
     pub mod utils;
 }
 
+pub mod helpers {
+    pub mod classdata;
+    pub mod utils;
+}
+
 pub mod loaders {
     pub mod r#static;
 }

@@ -1,12 +1,20 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use dnd_protos::proto_helpers::str_vec_to_string_vec;
 use dnd_protos::protos::*;
-use dnd_sheet_tauri::{calculators::{abilities::{calculate, calculate_modifier, calculate_modifier_string, format_modifier}, classes::get_proficiency_bonus, utils::parse_expression}, read_proto, ui_data::*};
+use dnd_sheet_tauri::{
+    helpers::utils::str_vec_to_string_vec,
+    calculators::{
+        abilities::{calculate, calculate_modifier, calculate_modifier_string, format_modifier},
+        classes::get_proficiency_bonus,
+        utils::parse_expression,
+    },
+    read_proto,
+    ui_data::*,
+};
 use prost::Message;
-use tauri::{Manager, State};
 use std::{collections::HashMap, fs, path::Path, vec};
+use tauri::{Manager, State};
 
 #[tauri::command]
 fn get_abilities_data(user_data: State<UserData>) -> Vec<AbilitiesDataUI> {
@@ -16,7 +24,11 @@ fn get_abilities_data(user_data: State<UserData>) -> Vec<AbilitiesDataUI> {
         let total = format!("{}", calculate(&ability.name, &user_data.sheet).unwrap());
 
         let mut proficient = false;
-        let full_class_name = format!("classes/{}_{}", user_data.sheet.classes.first().unwrap().subclass, user_data.sheet.classes.first().unwrap().name);
+        let full_class_name = format!(
+            "classes/{}_{}",
+            user_data.sheet.classes.first().unwrap().subclass,
+            user_data.sheet.classes.first().unwrap().name
+        );
         if let Some(class_data) = read_proto!(full_class_name, ClassData) {
             if class_data.saving_throws.contains(&ability.name) {
                 proficient = true;
@@ -30,7 +42,7 @@ fn get_abilities_data(user_data: State<UserData>) -> Vec<AbilitiesDataUI> {
             modifier,
             total,
             saving_throw: proficient,
-            saving_throw_modifier: "+2".to_string()
+            saving_throw_modifier: "+2".to_string(),
         })
     }
 
@@ -43,8 +55,12 @@ fn get_skills_data(user_data: State<UserData>) -> Vec<SkillDataUI> {
 
     if let Some(skills_data) = read_proto!("skills", SkillsData) {
         for skill_data in skills_data.skills {
-            let mut modifier = calculate_modifier(skill_data.ability().as_str_name().to_lowercase().as_str(), &user_data.sheet).unwrap_or(0);
-            
+            let mut modifier = calculate_modifier(
+                skill_data.ability().as_str_name().to_lowercase().as_str(),
+                &user_data.sheet,
+            )
+            .unwrap_or(0);
+
             if user_data.sheet.skills.contains(&skill_data.name) {
                 modifier += get_proficiency_bonus(&user_data.sheet);
             }
@@ -74,12 +90,13 @@ fn get_counters(user_data: State<UserData>) -> Vec<CounterUI> {
             for counter in class_data.counters {
                 let mut max_uses = 0;
                 if let Some(stuff) = sparse_map_get(5, &counter.max_uses) {
-                    max_uses = parse_expression(stuff, &user_data.sheet).expect("Parsing didn't go well!");
+                    max_uses =
+                        parse_expression(stuff, &user_data.sheet).expect("Parsing didn't go well!");
                 }
                 vec.push(CounterUI {
                     name: counter.name,
                     used: 0,
-                    max_uses: max_uses as i32
+                    max_uses: max_uses as i32,
                 });
             }
         } else {
@@ -97,17 +114,17 @@ struct UserData {
 fn main() {
     let c = CharacterSheet {
         character_name: "Test".to_string(),
-        classes: vec![
-            Class {
-                name: "cleric".to_string(),
-                subclass: "light".to_string(),
-                level: 3,
-                used_cantrips: 0,
-                spell_slots: vec![],
-                chosen_skills: vec![]
-            }
-        ],
-        race: Some(Race { name: "races/godwalker_ra".to_string() }),
+        classes: vec![Class {
+            name: "cleric".to_string(),
+            subclass: "light".to_string(),
+            level: 3,
+            used_cantrips: 0,
+            spell_slots: vec![],
+            chosen_skills: vec![],
+        }],
+        race: Some(Race {
+            name: "races/godwalker_ra".to_string(),
+        }),
         abilities: vec![
             Ability {
                 name: "strength".to_string(),
@@ -137,7 +154,7 @@ fn main() {
         custom_ability_increases: HashMap::from([("wisdom".to_string(), 1)]),
         skills: str_vec_to_string_vec(vec!["history", "medicine"]),
         custom_languages: vec![],
-        counters: vec![]
+        counters: vec![],
     };
 
     tauri::Builder::default()

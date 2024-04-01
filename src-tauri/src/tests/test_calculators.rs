@@ -23,7 +23,7 @@ fn calculate_abilities_test() {
         custom_ability_increases: HashMap::new(),
         skills: vec![],
         custom_languages: vec![],
-        counters: vec![]
+        counters: vec![],
     };
 
     assert_eq!(calculate("dexterity", &sheet_no_race), Some(10));
@@ -68,7 +68,7 @@ fn calculate_modifier_string_test() {
         custom_ability_increases: HashMap::new(),
         skills: vec![],
         custom_languages: vec![],
-        counters: vec![]
+        counters: vec![],
     };
 
     assert_eq!(

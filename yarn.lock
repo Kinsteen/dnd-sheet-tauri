@@ -252,7 +252,12 @@
     svelte-hmr "^0.15.3"
     vitefu "^0.2.5"
 
-"@tauri-apps/api@^2":
+"@tauri-apps/api@2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.0.0-beta.4.tgz#7688950f6e03f38b3bac73585f8f4cdd61be6aa6"
+  integrity sha512-Nxtj28NYUo5iwYkpYslxmOPkdI2WkELU2e3UH9nbJm9Ydki2CQwJVGQxx4EANtdZcMNsEsUzRqaDTvEUYH1l6w==
+
+"@tauri-apps/api@>=2.0.0-beta.0":
   version "2.0.0-beta.6"
   resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.0.0-beta.6.tgz#7ff0092b868db3627ccfe78b2648bdc67a9ca3e9"
   integrity sha512-ay3kAXYQoqC3rX4Vr3y6uGwrBhRPM7UQqZ9wr1VYzN6lkcMIcu7+UBvytmcfXDlVctqFoMQJafn6+dK/Oqh8+Q==
@@ -307,7 +312,7 @@
   resolved "https://registry.yarnpkg.com/@tauri-apps/cli-win32-x64-msvc/-/cli-win32-x64-msvc-2.0.0-beta.11.tgz#1622f0fbb6710af73bdfccda7d3e472923cbf198"
   integrity sha512-uJcQjR8tn44UlJXt+iGjIQLXp4ggug0KuwcYPXwD+ww3jV8RhHaPH2tPQ78ybgSJTIOsW41I9mE36Zcrso3oaQ==
 
-"@tauri-apps/cli@^2":
+"@tauri-apps/cli@>=2.0.0-beta.0":
   version "2.0.0-beta.11"
   resolved "https://registry.yarnpkg.com/@tauri-apps/cli/-/cli-2.0.0-beta.11.tgz#b9e6cf5bc0cc07dd5763eaf2f298dd6209155bb1"
   integrity sha512-Q9mfn6v3XjnbNZpZl2IucU5F5EXW4i7vaN8Enm4kybIBk0tBqXbbc9p71CFJohe2lyvI0twHy7CcfhHNZnGrDw==
@@ -322,6 +327,13 @@
     "@tauri-apps/cli-win32-arm64-msvc" "2.0.0-beta.11"
     "@tauri-apps/cli-win32-ia32-msvc" "2.0.0-beta.11"
     "@tauri-apps/cli-win32-x64-msvc" "2.0.0-beta.11"
+
+"@tauri-apps/plugin-shell@>=2.0.0-beta.0":
+  version "2.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-shell/-/plugin-shell-2.0.0-beta.2.tgz#1eff697246140f17478527b0d947d76d3403a226"
+  integrity sha512-9rWsfN7Wt+EuWmpmNnK8bCs+04fzhEYrHtWyLIAYxb9diFdcJrEoctCP9YM2v+Uf8/y8qFC7VCbZ/9VQHANymQ==
+  dependencies:
+    "@tauri-apps/api" "2.0.0-beta.4"
 
 "@types/estree@*", "@types/estree@1.0.5", "@types/estree@^1.0.0", "@types/estree@^1.0.1":
   version "1.0.5"

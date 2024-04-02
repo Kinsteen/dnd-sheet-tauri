@@ -2,7 +2,7 @@
   import Card from './lib/Card.svelte'
   import Radio from './lib/Radio.svelte';
 
-  import { invoke } from "@tauri-apps/api/tauri"
+  import { invoke } from "@tauri-apps/api/core"
 
   let abilitiesData = []
   let skillsData = []
@@ -86,22 +86,19 @@
     width: 100%;
   }
 
-  @media (min-width: 900px) {
-    .abilities-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
-      padding: 1rem;
-      width: 12rem;
-    }
+  .container {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .ability {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
-    gap: .5rem;
+    gap: .25rem;
+    height: 100%;
   }
 
   .ability > .modifier {
@@ -113,6 +110,41 @@
     font-size: medium;
     line-height: 1rem;
   }
+
+  @media (min-width: 900px) {
+    .abilities-grid {
+      grid-template-columns: 1fr;
+      width: 10rem;
+      height: 100vh;
+    }
+
+    .container {
+      /* display: flex; grid doesn't work? */
+      grid-template-columns: 2fr;
+      flex-direction: row;
+    }
+
+    .main-info {
+      width: fill-available;
+      width: -webkit-fill-available;
+    }
+  }
+
+  @media (max-height: 750px) and (min-width: 900px) {
+      .ability {
+        flex-direction: row;
+        height: 100%;
+      }
+
+      .ability > .modifier {
+        font-size: x-large;
+        line-height: 0;
+      }
+
+      .ability > .total {
+        font-size: small;
+      }
+    }
 
   .footer {
     display: block;

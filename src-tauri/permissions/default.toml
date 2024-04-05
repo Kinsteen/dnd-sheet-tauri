@@ -1,10 +1,8 @@
-[[set]]
-identifier = "allow-home-read-extended"
-description = """ This allows non-recursive read access to files and to create directories
-in the `$HOME` folder.
-"""
-permissions = [
-    "fs:read-files",
-    "fs:scope-home",
-    "fs:allow-mkdir"
+[[permission]]
+identifier = "my-identifier"
+description = "This describes the impact and more."
+commands.allow = [
+    "get_abilities_data",
+    "get_skills_data",
+    "get_counters"
 ]

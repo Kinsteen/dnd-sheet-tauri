@@ -11,10 +11,10 @@ use dnd_sheet_tauri::{
     helpers::utils::str_vec_to_string_vec,
     read_proto,
     ui_data::*,
+    AppPaths, UserData,
 };
-use prost::Message;
-use std::{collections::HashMap, fs, path::PathBuf, vec};
-use tauri::{Manager, State};
+use std::{collections::HashMap, vec};
+use tauri::{AppHandle, Manager, State};
 
 #[tauri::command]
 fn get_abilities_data(user_data: State<UserData>) -> Vec<AbilitiesDataUI> {
@@ -26,8 +26,8 @@ fn get_abilities_data(user_data: State<UserData>) -> Vec<AbilitiesDataUI> {
 
     let mut vec = vec![];
     for ability in &sheet.abilities {
-        let modifier = calculate_modifier_string(&ability.name, &sheet).unwrap();
-        let total = format!("{}", calculate(&ability.name, &sheet).unwrap());
+        let modifier = calculate_modifier_string(&ability.name, sheet).unwrap();
+        let total = format!("{}", calculate(&ability.name, sheet).unwrap());
 
         let mut proficient = false;
         let full_class_name = format!(
@@ -69,12 +69,12 @@ fn get_skills_data(user_data: State<UserData>) -> Vec<SkillDataUI> {
         for skill_data in skills_data.skills {
             let mut modifier = calculate_modifier(
                 skill_data.ability().as_str_name().to_lowercase().as_str(),
-                &sheet,
+                sheet,
             )
             .unwrap_or(0);
 
             if sheet.skills.contains(&skill_data.name) {
-                modifier += get_proficiency_bonus(&sheet);
+                modifier += get_proficiency_bonus(sheet);
             }
 
             vec.push(SkillDataUI {
@@ -89,11 +89,23 @@ fn get_skills_data(user_data: State<UserData>) -> Vec<SkillDataUI> {
 }
 
 #[tauri::command]
-fn get_counters(user_data: State<UserData>) -> Vec<CounterUI> {
+async fn get_counters(
+    user_data: State<'_, UserData>,
+    app: AppHandle,
+) -> Result<Vec<CounterUI>, ()> {
+    // let webview_window = tauri::WebviewWindowBuilder::new(
+    //     &app,
+    //     "label",
+    //     tauri::WebviewUrl::App("index.html".into()),
+    // )
+    // .build()
+    // .unwrap();
+    // webview_window.set_always_on_top(true);
+
     use dnd_sheet_tauri::calculators::utils::sparse_map_get;
 
     if user_data.sheet.is_none() {
-        return vec![];
+        return Ok(vec![]);
     }
 
     let sheet = user_data.sheet.as_ref().unwrap();
@@ -108,8 +120,7 @@ fn get_counters(user_data: State<UserData>) -> Vec<CounterUI> {
             for counter in class_data.counters {
                 let mut max_uses = 0;
                 if let Some(stuff) = sparse_map_get(5, &counter.max_uses) {
-                    max_uses =
-                        parse_expression(stuff, sheet).expect("Parsing didn't go well!");
+                    max_uses = parse_expression(stuff, sheet).expect("Parsing didn't go well!");
                 }
                 vec.push(CounterUI {
                     name: counter.name,
@@ -122,104 +133,31 @@ fn get_counters(user_data: State<UserData>) -> Vec<CounterUI> {
         }
     }
 
-    vec
-}
-
-struct AppPaths {
-    sheet_path: PathBuf
-}
-
-struct UserData {
-    sheet: Option<CharacterSheet>,
-    app_paths: AppPaths
-}
-
-impl UserData {
-    // TODO error handling
-    //  - can't encode for some reason
-    //  - can't write
-    pub fn save(&self) {
-        if let Some(sheet) = &self.sheet {
-            println!("Saving user data");
-            let mut buf = vec![];
-            _ = sheet.encode(&mut buf);
-            _ = fs::write(&self.app_paths.sheet_path, buf);
-        } else {
-            eprintln!("Can't save sheet, nothing loaded");
-        }
-    }
-
-    pub fn load(&mut self) {
-        let c = CharacterSheet {
-            character_name: "Test".to_string(),
-            health: 15,
-            temp_health: None,
-            health_system: Some(character_sheet::HealthSystem::Mean(true)),
-            classes: vec![Class {
-                name: "cleric".to_string(),
-                subclass: "light".to_string(),
-                level: 3,
-                used_cantrips: 0,
-                spell_slots: vec![],
-                chosen_skills: vec![],
-            }],
-            race: Some(Race {
-                name: "races/godwalker_ra".to_string(),
-            }),
-            abilities: vec![
-                Ability {
-                    name: "strength".to_string(),
-                    base_value: 12,
-                },
-                Ability {
-                    name: "dexterity".to_string(),
-                    base_value: 12,
-                },
-                Ability {
-                    name: "constitution".to_string(),
-                    base_value: 12,
-                },
-                Ability {
-                    name: "intelligence".to_string(),
-                    base_value: 13,
-                },
-                Ability {
-                    name: "wisdom".to_string(),
-                    base_value: 15,
-                },
-                Ability {
-                    name: "charisma".to_string(),
-                    base_value: 9,
-                },
-            ],
-            custom_ability_increases: HashMap::from([("wisdom".to_string(), 1)]),
-            skills: str_vec_to_string_vec(vec!["history", "medicine"]),
-            custom_languages: vec![],
-            counters: vec![],
-        };
-
-        self.sheet = Some(c);
-    }
+    Ok(vec)
 }
 
 fn setup_user_data(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     if let Ok(root_path) = app.path().app_data_dir() {
         let app_paths = AppPaths {
-            sheet_path: root_path.join("sheet")
+            sheet_path: root_path.join("sheet"),
+            homebrew_path: root_path.join("homebrew/"),
         };
 
-        let mut user_data = UserData { sheet: None, app_paths };
+        let mut user_data = UserData {
+            sheet: None,
+            app_paths,
+        };
         user_data.load();
         app.manage(user_data);
     } else {
         panic!("Can't find app data dir, exiting");
     }
-    
+
     Ok(())
 }
 
 fn main() {
-    let c = CharacterSheet {
+    let _c = CharacterSheet {
         character_name: "Test".to_string(),
         health: 15,
         temp_health: None,
@@ -268,6 +206,7 @@ fn main() {
     };
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .setup(setup_user_data)
         .invoke_handler(tauri::generate_handler![
             get_abilities_data,

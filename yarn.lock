@@ -328,6 +328,13 @@
     "@tauri-apps/cli-win32-ia32-msvc" "2.0.0-beta.11"
     "@tauri-apps/cli-win32-x64-msvc" "2.0.0-beta.11"
 
+"@tauri-apps/plugin-dialog@^2.0.0-beta.2":
+  version "2.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-dialog/-/plugin-dialog-2.0.0-beta.2.tgz#64028104c51f018acfce96221a41f6389b9707b5"
+  integrity sha512-WugTn/8d5jYA0GL1JRIJgA1OSxG0h2V4PSZZzehgA3v7rPlIU6w9s2+dSRqj55aMj6hm3Az9YbQqC18nuaHkpw==
+  dependencies:
+    "@tauri-apps/api" "2.0.0-beta.4"
+
 "@tauri-apps/plugin-shell@>=2.0.0-beta.0":
   version "2.0.0-beta.2"
   resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-shell/-/plugin-shell-2.0.0-beta.2.tgz#1eff697246140f17478527b0d947d76d3403a226"

@@ -41,6 +41,13 @@ This desktop app tries to be a replacement of D&D Beyond.
 		- [x] Skills,
 		- [ ] Spells
 		- [ ] Should also be able to be read from disk with user content (or paid non-SRD content)
+			- [ ] Users can drag and drop homebrew files directly in the app to install new content
+			- [ ] Other window that manages homebrew (per homebrew item (class, race, ..)? per campaign?)
+				- [ ] Install from file
+				- [ ] Disable homebrew (will unload current sheet if it has homebrew from it)
+				- [ ] Enable homebrew
+				- [ ] uninstall (delete) homebrew
+				- [ ] When loading a sheet, will check for used homebrew. If homebrew is detected but not enabled, will prompt to enable
 	- [ ] User data should be saved properly when modifying their sheet
 - [ ] (way later, maybe never) gRPC communication
 	- [ ] Players can share their page live to their DM

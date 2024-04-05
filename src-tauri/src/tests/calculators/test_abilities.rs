@@ -39,12 +39,12 @@ fn calculate_abilities_test() {
 
     let mut sheet_with_race = sheet_no_race.clone();
     sheet_with_race.race = Some(Race {
-        name: "races/godwalker_ra".to_string(),
+        name: "races/tiefling".to_string(),
     });
 
     assert_eq!(calculate("dexterity", &sheet_with_race), Some(10));
-    assert_eq!(calculate("wisdom", &sheet_with_race), Some(17));
-    assert_eq!(calculate("charisma", &sheet_with_race), Some(8));
+    assert_eq!(calculate("wisdom", &sheet_with_race), Some(15));
+    assert_eq!(calculate("charisma", &sheet_with_race), Some(10));
 
     let mut sheet_with_custom = sheet_with_race.clone();
     sheet_with_custom
@@ -52,8 +52,8 @@ fn calculate_abilities_test() {
         .insert("wisdom".to_string(), 1);
 
     assert_eq!(calculate("dexterity", &sheet_with_custom), Some(10));
-    assert_eq!(calculate("wisdom", &sheet_with_custom), Some(18));
-    assert_eq!(calculate("charisma", &sheet_with_custom), Some(8));
+    assert_eq!(calculate("wisdom", &sheet_with_custom), Some(16));
+    assert_eq!(calculate("charisma", &sheet_with_custom), Some(10));
 }
 
 #[test]
@@ -112,7 +112,7 @@ fn calculate_modifier_string_test() {
     );
     assert_eq!(
         calculate_modifier_string("wisdom", &sheet_with_race),
-        Some("+3".to_string())
+        Some("+2".to_string())
     );
     assert_eq!(
         calculate_modifier_string("charisma", &sheet_with_race),
@@ -130,7 +130,7 @@ fn calculate_modifier_string_test() {
     );
     assert_eq!(
         calculate_modifier_string("wisdom", &sheet_with_custom),
-        Some("+4".to_string())
+        Some("+3".to_string())
     );
     assert_eq!(
         calculate_modifier_string("charisma", &sheet_with_custom),

@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package proto;
+
+import 'dnd_data.proto';
+
+message Homebrew {
+    string name = 1;
+
+    // TODO more homebrew type
+    repeated ClassData classes = 2;
+    repeated RaceData races = 3;
+    repeated SkillData skills = 4;
+}

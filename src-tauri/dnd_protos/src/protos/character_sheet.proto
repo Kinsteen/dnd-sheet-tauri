@@ -26,6 +26,8 @@ message CharacterSheet {
   repeated string custom_languages = 50;
 
   repeated Counters counters = 100;
+
+  // repeated string using_homebrew = 200; // TODO ?
 }
 
 message HealthRolls {

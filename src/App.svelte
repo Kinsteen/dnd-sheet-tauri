@@ -111,7 +111,7 @@
     line-height: 1rem;
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 650px) {
     .abilities-grid {
       grid-template-columns: 1fr;
       width: 10rem;
@@ -130,7 +130,7 @@
     }
   }
 
-  @media (max-height: 750px) and (min-width: 900px) {
+  @media (max-height: 800px) {
       .ability {
         flex-direction: row;
         height: 100%;
@@ -170,7 +170,7 @@
     gap: 1rem;
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 650px) {
     .footer {
       display: none;
     }

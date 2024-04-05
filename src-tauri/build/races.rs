@@ -6,25 +6,6 @@ use crate::str_vec_to_string_vec;
 use crate::write_proto;
 
 pub fn generate_races() {
-    let goldwalker_ra = RaceData {
-        name: "godwalker_ra".to_string(),
-        ability_increases: HashMap::from([
-            ("wisdom".to_string(), 2),
-            ("constitution".to_string(), 1),
-        ]),
-        walking_speed: 30,
-        size: "medium".to_string(),
-        languages_known: str_vec_to_string_vec(vec!["common", "ancient_egyptian"]),
-        skill_proficiencies: str_vec_to_string_vec(vec!["perception"]),
-        num_skills_to_choose: 1,
-        tool_proficiencies: vec![],
-        num_tools_to_choose: 0,
-        weapon_proficiencies: vec![],
-        num_weapons_to_choose: 0,
-        darkvision_range: None,
-    };
-    write_proto("races/godwalker_ra", &goldwalker_ra);
-
     // TODO subrace
     let dragonborn = RaceData {
         name: "dragonborn".to_string(),

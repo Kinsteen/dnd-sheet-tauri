@@ -17,6 +17,7 @@ enum AbilityEnum {
 
 message ClassData {
   string name = 1;
+  // string source = 2; // TODO source ("srd", "<homebrew name>")
 
   int32 hit_die = 3;
 

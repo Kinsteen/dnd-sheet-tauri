@@ -77,7 +77,7 @@ fn parse_expression_test() {
     assert_eq!(parse_expression("dex_mod", &sheet), Ok(1));
     assert_eq!(parse_expression("con_mod", &sheet), Ok(1));
     assert_eq!(parse_expression("int_mod", &sheet), Ok(1));
-    assert_eq!(parse_expression("wis_mod", &sheet), Ok(4));
+    assert_eq!(parse_expression("wis_mod", &sheet), Ok(3));
     assert_eq!(parse_expression("cha_mod", &sheet), Ok(-1));
     assert_eq!(parse_expression("total_level + 2", &sheet), Ok(7));
     assert_eq!(parse_expression("cleric_level + 2", &sheet), Ok(5));

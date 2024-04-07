@@ -1,5 +1,6 @@
-use std::{collections::HashMap, sync::RwLock};
+use std::{collections::HashMap, fs, sync::RwLock};
 
+use prost::Message;
 use dnd_protos::protos::{ClassData, RaceData, SkillData};
 use once_cell::sync::Lazy;
 
@@ -17,6 +18,36 @@ pub static TEST_STRUCT: Lazy<Caches> = Lazy::new(|| Caches {
     skills: RwLock::new(HashMap::new()),
 });
 
+pub fn load_in_cache() {
+    let binding = crate::APP_STATE.read().unwrap();
+    let state = binding.as_ref().unwrap();
+    let paths = fs::read_dir(state.user_data.app_paths.homebrew_path.as_path()).unwrap();
+    drop(binding);
+
+    for path in paths {
+        let real_path = path.unwrap().path();
+        let data = fs::read(real_path).unwrap();
+        let homebrew = dnd_protos::protos::Homebrew::decode(data.as_ref()).unwrap();
+        for class in homebrew.classes {
+            let mut cache = TEST_STRUCT.classes.write().unwrap();
+            cache.insert(class.name.clone(), class);
+            drop(cache);
+        }
+
+        for race in homebrew.races {
+            let mut cache = TEST_STRUCT.races.write().unwrap();
+            cache.insert(race.name.clone(), race);
+            drop(cache);
+        }
+
+        for skill in homebrew.skills {
+            let mut cache = TEST_STRUCT.skills.write().unwrap();
+            cache.insert(skill.name.clone(), skill);
+            drop(cache);
+        }
+    }
+}
+
 /// This macro aims to cache homebrew data, while avoiding full copies of the messages each time.
 /// We use a thread safe cache with RwLock (inf readers, one writer)
 /// To use this macro:
@@ -29,7 +60,7 @@ pub static TEST_STRUCT: Lazy<Caches> = Lazy::new(|| Caches {
 /// that holds an Option<&"Message Type">>, that we can read. If we need values outside of
 /// the macro block, we can copy them, but it's better if we don't to avoid slow copies.
 /// There is also the wrote variable, which will be true if we read from the fileystem.
-/// 
+///
 /// Every drop(cache) is VERY important, otherwise deadlocks occurs. You can test with
 /// the homebrew_test.
 #[macro_export]
@@ -44,26 +75,7 @@ macro_rules! read_homebrew {
             // Drop read cache, reopen write cache, write, then close
             drop(cache);
 
-            // Load class from filesystem. If not found, should set $classdata to None and call
-            // the body
-            use std::fs;
-            use prost::Message;
-            // TODO unwrap properly
-            let paths = fs::read_dir($crate::APP_STATE.read().unwrap()
-                    .as_ref().unwrap()
-                    .user_data.app_paths.homebrew_path.as_path()
-                ).unwrap();
-            $wrote = true;
-            for path in paths {
-                let real_path = path.unwrap().path();
-                let data = fs::read(real_path).unwrap();
-                let homebrew = dnd_protos::protos::Homebrew::decode(data.as_ref()).unwrap();
-                for class in homebrew.$field {
-                    let mut cache = $crate::loaders::homebrew::TEST_STRUCT.$field.write().unwrap();
-                    cache.insert(class.name.clone(), class);
-                    //drop(cache); // This drop is not important?
-                }
-            }
+            $crate::loaders::homebrew::load_in_cache();
         } else {
             drop(cache);
         }

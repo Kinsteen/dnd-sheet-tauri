@@ -48,14 +48,23 @@ jobs:
         run: |
           yarn --frozen-lockfile
 
-      - uses: JonasKruckenberg/tauri-build@v1
-        id: tauri_build
+      # - uses: JonasKruckenberg/tauri-build@v1
+      #   id: tauri_build
 
-      - uses: actions/upload-artifact@v3
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: artifacts
+      #     path: "${{ join(fromJSON(steps.tauri_build.outputs.artifacts), '\n') }}"
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: artifacts
-          path: "${{ join(fromJSON(steps.tauri_build.outputs.artifacts), '\n') }}"
-
+          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'App v__VERSION__'
+          releaseBody: 'See the assets to download this version and install.'
+          releaseDraft: true
+          prerelease: false
   publish:
     needs: build-binaries
     runs-on: ubuntu-latest

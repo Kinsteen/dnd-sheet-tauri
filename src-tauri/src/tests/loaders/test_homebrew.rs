@@ -12,6 +12,7 @@ fn init() {
         user_data: crate::UserData {
             sheet: None,
             app_paths: crate::AppPaths {
+                user_data_path: PathBuf::from("./test_data_saved"),
                 sheet_path: PathBuf::from("./test_data"),
                 homebrew_path: PathBuf::from("src/tests/resources/homebrew"),
             },
@@ -24,8 +25,9 @@ fn homebrew_test() {
     use crate::{read_class, read_race};
     init();
 
-    read_race!(["elf", race_data] => {
+    read_race!(["elf", race_data, write] => {
         assert!(race_data.is_some());
+        assert!(!write);
     });
 
     read_race!(["godwalker_ra", race_data, write] => {

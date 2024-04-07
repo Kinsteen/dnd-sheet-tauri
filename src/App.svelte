@@ -1,19 +1,26 @@
 <script>
+import { Window } from '@tauri-apps/api/window';
+import { Webview } from '@tauri-apps/api/webview';
   import Card from './lib/Card.svelte'
   import Radio from './lib/Radio.svelte';
 
   import { invoke } from "@tauri-apps/api/core"
+  import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
+  import { window } from '@tauri-apps/api';
 
   let abilitiesData = []
   let skillsData = []
   let counters = []
+  let health = undefined;
 
   async function loadAbilities() {
     abilitiesData = await invoke("get_abilities_data")
+    console.log(abilitiesData)
   }
 
   async function loadSkills() {
     skillsData = await invoke("get_skills_data")
+    console.log(skillsData)
   }
 
   async function loadCounters() {
@@ -21,9 +28,15 @@
     console.log(counters)
   }
 
+  async function loadHealth() {
+    health = await invoke("get_health")
+    console.log(health)
+  }
+
   loadAbilities()
   loadSkills()
   loadCounters()
+  loadHealth()
 </script>
 
 <main class="container">
@@ -47,6 +60,37 @@
         {/each}
       </Card>
       <button on:click={loadAbilities}>Load abilities</button>
+      <button on:click={() => {
+        const window = new Window('label')
+        window.once('tauri://created', () => {
+          console.log("created")
+        })
+        window.once('tauri://error', e => {
+          console.log(e)
+        })
+        const w = new Webview(window, 'theUniqueLabel', {
+          url: '/create-character.html',
+          x: 0,
+          y: 0,
+          width: 500,
+          height:500
+        });
+
+        w.once('tauri://created', function () {
+          console.log("wv created")
+        });
+        w.once('tauri://error', function (e) {
+                  console.log(e)
+        });
+
+        w.position()
+
+        // webview.window.show().then(() => {
+        //   console.log("view showed")
+        // }).catch((e) => {
+        //   console.error(e)
+        // })
+      }}>Create character page</button>
     </div>
     <div class="main-column">
       <Card title="Saving throws">
@@ -57,13 +101,15 @@
       <Card title="Health">
         <div class="health-main">
           <button>-</button>
-          <div>15/15</div>
+          {#if health}
+          <div>{health.current}/{health.max}</div>
+          {/if}
           <button>+</button>
         </div>
       </Card>
       {#each counters as counter }
-        <Card title={counter.name}>
-          {counter.max_uses}
+        <Card title={counter.name.replaceAll("_", " ")}>
+          {counter.used}/{counter.max_uses}
         </Card>
       {/each}
     </div>

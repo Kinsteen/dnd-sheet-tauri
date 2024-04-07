@@ -21,13 +21,10 @@ macro_rules! read_proto {
     }};
 }
 
-pub fn read_class(class: &Class) -> Option<ClassData> {
+pub fn get_full_class_name(class: &Class) -> String {
     if !class.subclass.is_empty() {
-        read_proto!(
-            format!("classes/{}_{}", class.subclass, class.name),
-            ClassData
-        )
+        format!("{}_{}", class.subclass, class.name)
     } else {
-        read_proto!(format!("classes/{}", class.name), ClassData)
+        class.name.clone()
     }
 }

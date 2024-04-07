@@ -1,15 +1,20 @@
-use dnd_protos::protos::*;
-use helpers::utils::str_vec_to_string_vec;
+use dnd_protos::{protos::*, CharacterSheetBuilder};
 use once_cell::sync::Lazy;
 use prost::Message;
 use rust_embed::RustEmbed;
-use std::{collections::HashMap, fs, path::PathBuf, sync::RwLock};
+use std::{
+    fs,
+    path::PathBuf,
+    sync::RwLock,
+};
 
 #[derive(RustEmbed)]
 #[folder = "$CARGO_MANIFEST_DIR/generated"]
 pub struct GeneratedAsset;
 
+#[derive(Clone)]
 pub struct AppPaths {
+    pub user_data_path: PathBuf,
     pub sheet_path: PathBuf,
     pub homebrew_path: PathBuf,
 }
@@ -42,53 +47,30 @@ impl UserData {
     }
 
     pub fn load(&mut self) {
-        let c = CharacterSheet {
-            character_name: "Test".to_string(),
-            health: 15,
-            temp_health: None,
-            health_system: Some(character_sheet::HealthSystem::Mean(true)),
-            classes: vec![Class {
+        let builder = CharacterSheetBuilder::new()
+            .name("Test")
+            .health_system(character_sheet::HealthSystem::Mean(true))
+            .class(Class {
                 name: "cleric".to_string(),
                 subclass: "light".to_string(),
                 level: 3,
                 used_cantrips: 0,
                 spell_slots: vec![],
                 chosen_skills: vec![],
-            }],
-            race: Some(Race {
-                name: "races/godwalker_ra".to_string(),
-            }),
-            abilities: vec![
-                Ability {
-                    name: "strength".to_string(),
-                    base_value: 12,
-                },
-                Ability {
-                    name: "dexterity".to_string(),
-                    base_value: 12,
-                },
-                Ability {
-                    name: "constitution".to_string(),
-                    base_value: 12,
-                },
-                Ability {
-                    name: "intelligence".to_string(),
-                    base_value: 13,
-                },
-                Ability {
-                    name: "wisdom".to_string(),
-                    base_value: 15,
-                },
-                Ability {
-                    name: "charisma".to_string(),
-                    base_value: 9,
-                },
-            ],
-            custom_ability_increases: HashMap::from([("wisdom".to_string(), 1)]),
-            skills: str_vec_to_string_vec(vec!["history", "medicine"]),
-            custom_languages: vec![],
-            counters: vec![],
-        };
+            })
+            .race(Race {
+                name: "tiefling".to_string(),
+            })
+            .ability("strength", 12)
+            .ability("dexterity", 12)
+            .ability("constitution", 12)
+            .ability("intelligence", 13)
+            .ability("wisdom", 15)
+            .ability("charisma", 9)
+            .custom_ability_increase("wisdom", 1)
+            .skill("history")
+            .skill("medicine");
+        let c = builder.build().unwrap();
 
         self.sheet = Some(c);
     }
@@ -107,6 +89,7 @@ pub mod helpers {
 }
 
 pub mod loaders {
+    pub mod disk;
     pub mod global;
     pub mod homebrew;
     pub mod r#static;
@@ -151,5 +134,17 @@ pub mod ui_data {
         pub name: String,
         pub used: i32,
         pub max_uses: i32,
+    }
+
+    #[derive(Serialize, Deserialize)]
+    pub struct HealthUI {
+        pub current: i32,
+        pub max: i32,
+        pub temporary: i32,
+    }
+
+    #[derive(Serialize, Deserialize)]
+    pub struct ClassUi {
+        pub name: String,
     }
 }

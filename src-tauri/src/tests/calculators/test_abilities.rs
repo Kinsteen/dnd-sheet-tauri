@@ -39,7 +39,7 @@ fn calculate_abilities_test() {
 
     let mut sheet_with_race = sheet_no_race.clone();
     sheet_with_race.race = Some(Race {
-        name: "races/tiefling".to_string(),
+        name: "tiefling".to_string(),
     });
 
     assert_eq!(calculate("dexterity", &sheet_with_race), Some(10));
@@ -103,7 +103,7 @@ fn calculate_modifier_string_test() {
 
     let mut sheet_with_race = sheet_no_race.clone();
     sheet_with_race.race = Some(Race {
-        name: "races/godwalker_ra".to_string(),
+        name: "tiefling".to_string(),
     });
 
     assert_eq!(
@@ -116,7 +116,7 @@ fn calculate_modifier_string_test() {
     );
     assert_eq!(
         calculate_modifier_string("charisma", &sheet_with_race),
-        Some("-1".to_string())
+        Some("+0".to_string())
     );
 
     let mut sheet_with_custom = sheet_with_race.clone();
@@ -134,7 +134,7 @@ fn calculate_modifier_string_test() {
     );
     assert_eq!(
         calculate_modifier_string("charisma", &sheet_with_custom),
-        Some("-1".to_string())
+        Some("+0".to_string())
     );
 
     // TODO more tests

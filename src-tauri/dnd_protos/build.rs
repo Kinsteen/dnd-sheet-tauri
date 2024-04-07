@@ -8,6 +8,7 @@ fn main() -> Result<()> {
                 "src/protos/dnd_data.proto",
                 "src/protos/character_sheet.proto",
                 "src/protos/homebrew.proto",
+                "src/protos/user_data.proto",
             ],
             &["src/protos"],
         )?;

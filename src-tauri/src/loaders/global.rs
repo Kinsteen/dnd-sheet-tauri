@@ -43,4 +43,3 @@ macro_rules! read_race {
         }
     };
 }
-

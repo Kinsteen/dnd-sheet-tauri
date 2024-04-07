@@ -4,5 +4,8 @@ description = "This describes the impact and more."
 commands.allow = [
     "get_abilities_data",
     "get_skills_data",
-    "get_counters"
+    "get_counters",
+    "get_health",
+    "get_available_classes",
+    "get_available_races"
 ]

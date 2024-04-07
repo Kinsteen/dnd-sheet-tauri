@@ -31,7 +31,7 @@ fn parse_expression_test() {
             },
         ],
         race: Some(Race {
-            name: "races/godwalker_ra".to_string(),
+            name: "elf".to_string(),
         }),
         abilities: vec![
             Ability {
@@ -74,7 +74,7 @@ fn parse_expression_test() {
         ))
     );
     assert_eq!(parse_expression("str_mod", &sheet), Ok(1));
-    assert_eq!(parse_expression("dex_mod", &sheet), Ok(1));
+    assert_eq!(parse_expression("dex_mod", &sheet), Ok(2));
     assert_eq!(parse_expression("con_mod", &sheet), Ok(1));
     assert_eq!(parse_expression("int_mod", &sheet), Ok(1));
     assert_eq!(parse_expression("wis_mod", &sheet), Ok(3));

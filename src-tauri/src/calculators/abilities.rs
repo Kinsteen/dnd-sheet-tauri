@@ -1,6 +1,6 @@
 use dnd_protos::protos::*;
 
-use crate::read_proto;
+use crate::read_race;
 
 pub fn calculate(name: &str, sheet: &CharacterSheet) -> Option<i32> {
     let v = &sheet.abilities;
@@ -8,11 +8,13 @@ pub fn calculate(name: &str, sheet: &CharacterSheet) -> Option<i32> {
     let mut total = ability.base_value;
 
     if let Some(race) = &sheet.race {
-        if let Some(race_data) = read_proto!(&race.name, RaceData) {
-            if let Some(inc) = race_data.ability_increases.get(name) {
-                total += inc;
+        read_race!([&race.name, race_data] => {
+            if race_data.is_some() {
+                if let Some(inc) = race_data.unwrap().ability_increases.get(name) {
+                    total += inc;
+                }
             }
-        }
+        });
     }
 
     if let Some(custom_inc) = sheet.custom_ability_increases.get(name) {

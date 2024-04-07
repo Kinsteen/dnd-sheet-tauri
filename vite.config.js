@@ -5,6 +5,15 @@ import { svelte } from "@sveltejs/vite-plugin-svelte";
 export default defineConfig(async () => ({
   plugins: [svelte()],
 
+  build: {
+    rollupOptions: {
+      input: {
+        main: "./index.html",
+        createChar: "./create-character.html",
+      },
+    },
+  },
+
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent vite from obscuring rust errors

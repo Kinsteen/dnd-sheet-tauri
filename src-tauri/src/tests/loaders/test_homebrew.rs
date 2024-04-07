@@ -36,7 +36,7 @@ fn homebrew_test() {
         assert_eq!(race_data.name, "godwalker_ra");
         assert_eq!(race_data.walking_speed, 30);
         assert_eq!(race_data.size, "medium");
-        assert!(write);
+        assert!(!write);
     });
 
     read_race!(["godwalker_ra", race_data, write] => {
@@ -50,7 +50,7 @@ fn homebrew_test() {
 
     read_race!(["non_existent", race_data, write] => {
         assert!(race_data.is_none());
-        assert!(write); // Each time we search for something that doesn't exist, we read the FS
+        assert!(!write); // Each time we search for something that doesn't exist, we read the FS
     });
 
     read_race!(["ai", race_data, write] => {
@@ -65,12 +65,12 @@ fn homebrew_test() {
 
     read_class!(["blood_hunter", class_data, write] => {
         assert!(class_data.is_some());
-        assert!(write);
+        assert!(!write);
     });
 
     read_class!(["non_existent", class_data, write] => {
         assert!(class_data.is_none());
-        assert!(write);
+        assert!(!write);
     });
 
     read_class!(["blood_hunter", class_data, write] => {

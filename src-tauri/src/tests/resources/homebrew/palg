@@ -2,13 +2,13 @@
 palg
 blood_hunter
 ^
-godwalker_ra
-constitution
+godwalker_ra
 
-wisdom"medium*common*ancient_egyptianR
+wisdom
+constitution"medium*common*ancient_egyptianR
 perceptionXY
-ai
+ai
+intelligence
 
-wisdom
-intelligence"medium*common*anyRinvestigationR
+wisdom"medium*common*anyRinvestigationR
 perceptionRany

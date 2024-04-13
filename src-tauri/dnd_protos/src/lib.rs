@@ -25,12 +25,8 @@ impl CharacterSheet {
         let health_system = self.health_system.as_mut()?;
 
         match health_system {
-            character_sheet::HealthSystem::Rolls(health_rolls) => {
-                Some(health_rolls)
-            }
-            _ => {
-                None
-            }
+            character_sheet::HealthSystem::Rolls(health_rolls) => Some(health_rolls),
+            _ => None,
         }
     }
 

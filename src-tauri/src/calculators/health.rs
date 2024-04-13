@@ -17,7 +17,7 @@ pub fn get_max_health(sheet: &CharacterSheet) -> i32 {
 
     let health_system_clone = sheet.health_system.clone();
 
-    let mut hit_die = 0;
+    let hit_die;
     read_class!([get_full_class_name(sheet.classes.first().unwrap()).as_str(), class_data] => {
         if class_data.is_none() {
             return 0;
@@ -32,7 +32,7 @@ pub fn get_max_health(sheet: &CharacterSheet) -> i32 {
     match health_system_clone.unwrap() {
         HealthSystem::Mean(_m) => {
             for (i, class) in sheet.classes.iter().enumerate() {
-                let mut hit_die = 0;
+                let hit_die;
                 read_class!([get_full_class_name(class).as_str(), class_data] => {
                     if class_data.is_none() {
                         return 0;

@@ -2,14 +2,10 @@ use dnd_protos::{protos::*, CharacterSheetBuilder};
 use once_cell::sync::Lazy;
 use prost::Message;
 use rust_embed::RustEmbed;
-use std::{
-    fs,
-    path::PathBuf,
-    sync::RwLock,
-};
+use std::{fs, path::PathBuf, sync::RwLock};
 
 #[derive(RustEmbed)]
-#[folder = "$CARGO_MANIFEST_DIR/generated"]
+#[folder = "./generated"]
 pub struct GeneratedAsset;
 
 #[derive(Clone)]
@@ -81,6 +77,10 @@ pub mod calculators {
     pub mod classes;
     pub mod health;
     pub mod utils;
+}
+
+pub mod commands {
+    pub mod getters;
 }
 
 pub mod helpers {

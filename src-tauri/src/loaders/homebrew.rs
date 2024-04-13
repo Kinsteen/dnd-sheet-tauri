@@ -1,8 +1,8 @@
 use std::{collections::HashMap, fs, sync::RwLock};
 
-use prost::Message;
-use dnd_protos::protos::{ClassData, RaceData, SkillData, BackgroundData};
+use dnd_protos::protos::{BackgroundData, ClassData, RaceData, SkillData};
 use once_cell::sync::Lazy;
+use prost::Message;
 
 // Field name should match field name in Homebrew struct
 // Field type should match field type in Homebrew struct
@@ -10,7 +10,7 @@ pub struct Caches {
     pub classes: RwLock<HashMap<String, ClassData>>,
     pub races: RwLock<HashMap<String, RaceData>>,
     pub skills: RwLock<HashMap<String, SkillData>>,
-    pub backgrounds: RwLock<HashMap<String, BackgroundData>>
+    pub backgrounds: RwLock<HashMap<String, BackgroundData>>,
 }
 
 pub static DATA_CACHE: Lazy<Caches> = Lazy::new(|| Caches {

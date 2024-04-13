@@ -56,7 +56,10 @@ pub fn parse_expression(expression: &str, sheet: &CharacterSheet) -> Result<i64,
     );
     final_expr = final_expr.replace(
         "cha_mod",
-        format!("({})", calculate_modifier("charisma", sheet).unwrap_or(0)).as_str(),
+        calculate_modifier("charisma", sheet)
+            .unwrap_or(0)
+            .to_string()
+            .as_str(),
     );
 
     final_expr = final_expr.replace("total_level", get_total_level(sheet).to_string().as_str());

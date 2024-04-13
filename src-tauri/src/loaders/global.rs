@@ -43,3 +43,26 @@ macro_rules! read_race {
         }
     };
 }
+
+#[macro_export]
+macro_rules! read_background {
+    ([$name:expr, $bg_data:ident, $wrote:ident] => $($body:tt)*) => {{
+        // Check first if it's builtin
+        use dnd_protos::protos::BackgroundData;
+        let builtin = $crate::read_proto!(format!("backgrounds/{}", $name), BackgroundData);
+        if builtin.is_some() {
+            let $wrote = false;
+            let $race_data = builtin; // Move
+            $($body)*
+        } else {
+            $crate::read_homebrew! { BackgroundData, backgrounds [$name, $bg_data, $wrote] =>
+                $($body)*
+            }
+        }
+    }};
+    ([$name:expr, $bg_data:ident] => $($body:tt)*) => {
+        read_background! { [$name, $bg_data, _trash_write] =>
+            $($body)*
+        }
+    };
+}

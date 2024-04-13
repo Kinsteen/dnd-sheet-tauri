@@ -126,6 +126,10 @@ impl CharacterSheetBuilder {
             return Err("You have to pick a class.".to_string());
         }
 
+        if self.race.is_none() {
+            return Err("You have to pick a race.".to_string());
+        }
+
         if self.health_system.is_none() {
             return Err("You have to pick a health system.".to_string());
         }
@@ -133,10 +137,8 @@ impl CharacterSheetBuilder {
         Ok(())
     }
 
-    pub fn build(self) -> Result<CharacterSheet, ()> {
-        if self.can_build().is_err() {
-            return Err(());
-        }
+    pub fn build(self) -> Result<CharacterSheet, String> {
+        self.can_build()?;
 
         Ok(CharacterSheet {
             character_name: self.character_name.unwrap(),
@@ -149,7 +151,7 @@ impl CharacterSheetBuilder {
             skills: self.skills,
             custom_languages: self.custom_languages,
             counters: self.counters,
-            health_system: None,
+            health_system: self.health_system,
         })
     }
 }

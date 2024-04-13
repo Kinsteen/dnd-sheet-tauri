@@ -1,7 +1,7 @@
 use std::{collections::HashMap, fs, sync::RwLock};
 
 use prost::Message;
-use dnd_protos::protos::{ClassData, RaceData, SkillData};
+use dnd_protos::protos::{ClassData, RaceData, SkillData, BackgroundData};
 use once_cell::sync::Lazy;
 
 // Field name should match field name in Homebrew struct
@@ -10,12 +10,14 @@ pub struct Caches {
     pub classes: RwLock<HashMap<String, ClassData>>,
     pub races: RwLock<HashMap<String, RaceData>>,
     pub skills: RwLock<HashMap<String, SkillData>>,
+    pub backgrounds: RwLock<HashMap<String, BackgroundData>>
 }
 
-pub static TEST_STRUCT: Lazy<Caches> = Lazy::new(|| Caches {
+pub static DATA_CACHE: Lazy<Caches> = Lazy::new(|| Caches {
     classes: RwLock::new(HashMap::new()),
     races: RwLock::new(HashMap::new()),
     skills: RwLock::new(HashMap::new()),
+    backgrounds: RwLock::new(HashMap::new()),
 });
 
 pub fn load_in_cache() {
@@ -29,19 +31,19 @@ pub fn load_in_cache() {
         let data = fs::read(real_path).unwrap();
         let homebrew = dnd_protos::protos::Homebrew::decode(data.as_ref()).unwrap();
         for class in homebrew.classes {
-            let mut cache = TEST_STRUCT.classes.write().unwrap();
+            let mut cache = DATA_CACHE.classes.write().unwrap();
             cache.insert(class.name.clone(), class);
             drop(cache);
         }
 
         for race in homebrew.races {
-            let mut cache = TEST_STRUCT.races.write().unwrap();
+            let mut cache = DATA_CACHE.races.write().unwrap();
             cache.insert(race.name.clone(), race);
             drop(cache);
         }
 
         for skill in homebrew.skills {
-            let mut cache = TEST_STRUCT.skills.write().unwrap();
+            let mut cache = DATA_CACHE.skills.write().unwrap();
             cache.insert(skill.name.clone(), skill);
             drop(cache);
         }
@@ -67,7 +69,7 @@ pub fn load_in_cache() {
 macro_rules! read_homebrew {
     ($message_type:ident, $field:ident [$name:expr, $classdata:ident, $wrote:ident] => $($body:tt)*) => {
         let mut $wrote = false;
-        let cache = $crate::loaders::homebrew::TEST_STRUCT.$field.read().unwrap();
+        let cache = $crate::loaders::homebrew::DATA_CACHE.$field.read().unwrap();
         if !cache.contains_key($name) {
             // We can arrive here with multiple threads if we're unlucky. Should not be a problem,
             // but may do unnecessary fs read.
@@ -81,37 +83,37 @@ macro_rules! read_homebrew {
         }
 
         // Reopen read cache. Should drop cache if it's still open
-        let cache = $crate::loaders::homebrew::TEST_STRUCT.$field.read().unwrap();
+        let cache = $crate::loaders::homebrew::DATA_CACHE.$field.read().unwrap();
         let $classdata = cache.get($name);
         $($body)*
         drop(cache);
     };
 }
 
-#[macro_export]
-macro_rules! read_homebrew_class {
-    ([$name:expr, $classdata:ident, $wrote:ident] => $($body:tt)*) => {
-        $crate::read_homebrew! { ClassData, classes [$name, $racedata, $wrote] =>
-            $($body)*
-        }
-    };
-    ([$name:expr, $classdata:ident] => $($body:tt)*) => {
-        read_homebrew_class! { [$name, $classdata, _a] =>
-            $($body)*
-        }
-    };
-}
+// #[macro_export]
+// macro_rules! read_homebrew_class {
+//     ([$name:expr, $classdata:ident, $wrote:ident] => $($body:tt)*) => {
+//         $crate::read_homebrew! { ClassData, classes [$name, $racedata, $wrote] =>
+//             $($body)*
+//         }
+//     };
+//     ([$name:expr, $classdata:ident] => $($body:tt)*) => {
+//         read_homebrew_class! { [$name, $classdata, _a] =>
+//             $($body)*
+//         }
+//     };
+// }
 
-#[macro_export]
-macro_rules! read_homebrew_race {
-    ([$name:expr, $racedata:ident, $wrote:ident] => $($body:tt)*) => {
-        $crate::read_homebrew! { RaceData, races [$name, $racedata, $wrote] =>
-            $($body)*
-        }
-    };
-    ([$name:expr, $racedata:ident] => $($body:tt)*) => {
-        read_homebrew_race! { [$name, $racedata, _a] =>
-            $($body)*
-        }
-    };
-}
+// #[macro_export]
+// macro_rules! read_homebrew_race {
+//     ([$name:expr, $racedata:ident, $wrote:ident] => $($body:tt)*) => {
+//         $crate::read_homebrew! { RaceData, races [$name, $racedata, $wrote] =>
+//             $($body)*
+//         }
+//     };
+//     ([$name:expr, $racedata:ident] => $($body:tt)*) => {
+//         read_homebrew_race! { [$name, $racedata, _a] =>
+//             $($body)*
+//         }
+//     };
+// }

@@ -147,4 +147,10 @@ pub mod ui_data {
     pub struct ClassUi {
         pub name: String,
     }
+
+    #[derive(Serialize, Deserialize)]
+    pub struct SkillsUI {
+        pub skills: Vec<String>,
+        pub num_to_pick: i32,
+    }
 }

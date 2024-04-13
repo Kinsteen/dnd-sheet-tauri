@@ -11,4 +11,5 @@ message Homebrew {
     repeated ClassData classes = 2;
     repeated RaceData races = 3;
     repeated SkillData skills = 4;
+    repeated BackgroundData backgrounds = 5;
 }

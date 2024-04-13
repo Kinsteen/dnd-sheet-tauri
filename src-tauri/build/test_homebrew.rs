@@ -52,7 +52,11 @@ pub fn generate_test_homebrew() {
         name: "palg".to_string(),
         classes: vec![blood_hunter],
         races: vec![goldwalker_ra, ai],
-        skills: vec![],
+        skills: vec![SkillData {
+            name: "craftsmanship".to_string(),
+            ability: "dexterity".to_string(),
+        }],
+        backgrounds: vec![],
     };
     write_test_proto("palg", &palg_homebrew);
 

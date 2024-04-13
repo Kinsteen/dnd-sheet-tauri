@@ -7,5 +7,7 @@ commands.allow = [
     "get_counters",
     "get_health",
     "get_available_classes",
-    "get_available_races"
+    "get_available_races",
+    "create_sheet",
+    "get_available_skills"
 ]

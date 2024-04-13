@@ -1,13 +1,13 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use dnd_protos::protos::*;
+use dnd_protos::{protos::*, CharacterSheetBuilder};
 use dnd_sheet_tauri::{
     calculators::{
         abilities::{calculate, calculate_modifier, calculate_modifier_string, format_modifier}, classes::get_proficiency_bonus, health::get_max_health, utils::parse_expression
     }, helpers::utils::str_vec_to_string_vec, loaders::{
-        disk::{load_sheet, save_current_sheet, save_disk_data, DiskError}, homebrew::{load_in_cache, TEST_STRUCT}, r#static::get_full_class_name
-    }, read_class, read_proto, ui_data::*, AppPaths, GeneratedAsset, UserData, APP_STATE
+        disk::{load_sheet, save_current_sheet, save_disk_data, DiskError}, homebrew::{load_in_cache, DATA_CACHE}, r#static::get_full_class_name
+    }, read_class, read_proto, read_race, ui_data::*, AppPaths, GeneratedAsset, UserData, APP_STATE
 };
 use std::{collections::HashMap, path::PathBuf, vec};
 use tauri::{AppHandle, Manager};
@@ -78,7 +78,7 @@ fn get_skills_data() -> Vec<SkillDataUI> {
     if let Some(skills_data) = read_proto!("skills", SkillsData) {
         for skill_data in skills_data.skills {
             let mut modifier = calculate_modifier(
-                skill_data.ability().as_str_name().to_lowercase().as_str(),
+                &skill_data.ability,
                 sheet,
             )
             .unwrap_or(0);
@@ -177,12 +177,13 @@ async fn get_available_classes() -> Result<Vec<ClassUi>, ()> {
         }
     }
 
-    let state = TEST_STRUCT.classes.read().unwrap();
-    for (name, _data) in state.iter() {
+    let classes_cache = DATA_CACHE.classes.read().unwrap();
+    for (name, _data) in classes_cache.iter() {
         vec.push(ClassUi {
             name: name.to_string()
         });
     }
+    drop(classes_cache);
 
     vec.sort_by(|a, b| a.name.cmp(&b.name));
 
@@ -202,16 +203,102 @@ async fn get_available_races() -> Result<Vec<ClassUi>, ()> {
         }
     }
 
-    let state = TEST_STRUCT.races.read().unwrap();
-    for (name, _data) in state.iter() {
+    let races_cache = DATA_CACHE.races.read().unwrap();
+    for (name, _data) in races_cache.iter() {
         vec.push(ClassUi {
             name: name.to_string()
         });
     }
+    drop(races_cache);
 
     vec.sort_by(|a, b| a.name.cmp(&b.name));
 
     Ok(vec)
+}
+
+#[tauri::command]
+async fn create_sheet(character_name: String, class: String, race: String, health_system_mean: bool, abilities: HashMap<String, i32>, skills: Vec<String>) -> Result<(), String> {
+    read_class!([&class, class_data] => {
+        if class_data.is_none() {
+            eprintln!("Class doesn't exists!");
+            return Err("Class doesn't exists!".to_string());
+        }
+    });
+
+    read_race!([&race, race_data] => {
+        if race_data.is_none() {
+            eprintln!("Race doesn't exists!");
+            return Err("Race doesn't exists!".to_string());
+        }
+    });
+
+    let mut builder = CharacterSheetBuilder::new();
+    builder = builder.name(character_name);
+    builder = builder.class(Class {
+        name: class,
+        subclass: "".to_owned(),
+        level: 1,
+        used_cantrips: 0,
+        spell_slots: vec![],
+        chosen_skills: vec![], // TODO
+    });
+
+    builder = builder.race(Race { name: race });
+
+    if health_system_mean {
+        builder = builder.health_system(character_sheet::HealthSystem::Mean(true));
+    } else {
+        builder = builder.health_system(character_sheet::HealthSystem::Rolls(HealthRolls { rolls: vec![] }));
+    }
+
+    for (ability, score) in abilities.iter() {
+        builder = builder.ability(ability, score.to_owned());
+    }
+
+    for skill in skills {
+        builder = builder.skill(skill);
+    }
+
+    let sheet = builder.build();
+    println!("{sheet:#?}");
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn get_available_skills(class_name: String, race_name: String) -> Result<(SkillsUI, SkillsUI), String> {
+    let mut skills_class = vec![];
+    let mut skills_race = vec![];
+    let mut pick_class = 0;
+    let mut pick_race = 0;
+
+    // TODO background skills
+
+    read_class!([&class_name, class_data] => {
+        if let Some(class) = class_data {
+            for skill in class.skill_proficiencies.clone() {
+                skills_class.push(skill);
+            }
+            pick_class = class.num_skills_to_choose;
+        }
+    });
+
+    read_race!([&race_name, race_data] => {
+        if let Some(race) = race_data {
+            for skill in race.skill_proficiencies.clone() {
+                skills_race.push(skill);
+            }
+            pick_race = race.num_skills_to_choose;
+        }
+    });
+
+    Ok((SkillsUI {
+        num_to_pick: pick_class,
+        skills: skills_class
+    }, SkillsUI {
+        num_to_pick: pick_race,
+        skills: skills_race
+    }))
 }
 
 fn setup_user_data(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
@@ -334,6 +421,8 @@ fn main() {
             get_health,
             get_available_classes,
             get_available_races,
+            create_sheet,
+            get_available_skills,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

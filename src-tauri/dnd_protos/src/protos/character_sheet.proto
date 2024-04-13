@@ -12,7 +12,7 @@ message CharacterSheet {
   optional int32 temp_health = 5;
 
   oneof health_system {
-    bool mean = 6;
+    bool mean = 6; // Bool value is ignored, presence is all it takes
     HealthRolls rolls = 7;
   }
 

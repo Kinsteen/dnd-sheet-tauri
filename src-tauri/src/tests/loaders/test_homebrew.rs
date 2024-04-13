@@ -1,9 +1,7 @@
 #[cfg(test)]
+use crate::loaders::homebrew::load_in_cache;
 
-struct TestNecessities {
-    user_data: crate::UserData,
-}
-
+#[cfg(test)]
 fn init() {
     use std::path::PathBuf;
 
@@ -84,6 +82,7 @@ fn homebrew_test() {
     let mut threads = vec![];
     for _ in 0..1000 {
         threads.push(std::thread::spawn(|| {
+            load_in_cache();
             read_race! { ["godwalker_ra", race_data] =>
                 assert!(race_data.is_some());
                 let race_data = race_data.unwrap();

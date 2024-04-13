@@ -30,23 +30,30 @@ pub fn load_in_cache() {
         let real_path = path.unwrap().path();
         let data = fs::read(real_path).unwrap();
         let homebrew = dnd_protos::protos::Homebrew::decode(data.as_ref()).unwrap();
+
+        let mut cache = DATA_CACHE.classes.write().unwrap();
         for class in homebrew.classes {
-            let mut cache = DATA_CACHE.classes.write().unwrap();
             cache.insert(class.name.clone(), class);
-            drop(cache);
         }
+        drop(cache);
 
+        let mut cache = DATA_CACHE.races.write().unwrap();
         for race in homebrew.races {
-            let mut cache = DATA_CACHE.races.write().unwrap();
             cache.insert(race.name.clone(), race);
-            drop(cache);
         }
+        drop(cache);
 
+        let mut cache = DATA_CACHE.skills.write().unwrap();
         for skill in homebrew.skills {
-            let mut cache = DATA_CACHE.skills.write().unwrap();
             cache.insert(skill.name.clone(), skill);
-            drop(cache);
         }
+        drop(cache);
+
+        let mut cache = DATA_CACHE.backgrounds.write().unwrap();
+        for background in homebrew.backgrounds {
+            cache.insert(background.name.clone(), background);
+        }
+        drop(cache);
     }
 }
 

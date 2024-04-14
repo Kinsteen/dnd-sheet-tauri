@@ -6,8 +6,7 @@ use dnd_sheet_tauri::{
     commands::getters::*,
     helpers::utils::str_vec_to_string_vec,
     loaders::disk::{load_sheet, save_current_sheet, save_disk_data, DiskError},
-    read_class, read_race,
-    AppPaths, UserData,
+    read_class, read_race
 };
 use std::{collections::HashMap, path::PathBuf, vec};
 use tauri::Manager;
@@ -85,47 +84,45 @@ fn setup_user_data(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error
             },
         });
         drop(state);
-
-        let disk_data = load_sheet();
-        match disk_data {
-            Err(DiskError::DecodeError) => {
-                eprintln!("Error decoding the sheet");
-            }
-            Err(DiskError::FileNotFound) => {
-                // TODO temp
-                eprintln!("Default sheet not found");
-                let mut state = dnd_sheet_tauri::APP_STATE.write().unwrap();
-                state.as_mut().unwrap().user_data.load();
-                drop(state);
-                _ = save_disk_data();
-                _ = save_current_sheet();
-            }
-            Err(DiskError::NoState) => {
-                println!("No way")
-            }
-            Ok(sheet) => {
-                let mut state = dnd_sheet_tauri::APP_STATE.write().unwrap();
-                state.as_mut().unwrap().user_data.sheet = Some(sheet);
-                drop(state);
-            }
-        }
     } else if let Ok(root_path) = app.path().app_data_dir() {
-        let app_paths = AppPaths {
-            user_data_path: root_path.join("user_data"),
-            sheet_path: root_path.join("sheets/"),
-            homebrew_path: root_path.join("homebrew/"),
-        };
-
-        let mut user_data = UserData {
-            sheet: None,
-            app_paths: app_paths.clone(),
-        };
-        user_data.load();
-
         let mut state = dnd_sheet_tauri::APP_STATE.write().unwrap();
-        *state = Some(dnd_sheet_tauri::State { user_data });
+        *state = Some(dnd_sheet_tauri::State {
+            user_data: dnd_sheet_tauri::UserData {
+                sheet: None,
+                app_paths: dnd_sheet_tauri::AppPaths {
+                    user_data_path: root_path.join("user_data"),
+                    sheet_path: root_path.join("sheets/"),
+                    homebrew_path: root_path.join("homebrew/"),
+                },
+            },
+        });
+        drop(state);
     } else {
         panic!("Can't find app data dir, exiting");
+    }
+
+    let disk_data = load_sheet();
+    match disk_data {
+        Err(DiskError::DecodeError) => {
+            eprintln!("Error decoding the sheet");
+        }
+        Err(DiskError::FileNotFound) => {
+            // TODO temp
+            eprintln!("Default sheet not found");
+            let mut state = dnd_sheet_tauri::APP_STATE.write().unwrap();
+            state.as_mut().unwrap().user_data.load();
+            drop(state);
+            _ = save_disk_data();
+            _ = save_current_sheet();
+        }
+        Err(DiskError::NoState) => {
+            println!("No state found, app loaded very badly");
+        }
+        Ok(sheet) => {
+            let mut state = dnd_sheet_tauri::APP_STATE.write().unwrap();
+            state.as_mut().unwrap().user_data.sheet = Some(sheet);
+            drop(state);
+        }
     }
 
     Ok(())

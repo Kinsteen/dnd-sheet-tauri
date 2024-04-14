@@ -107,6 +107,9 @@ pub fn load_sheet() -> Result<CharacterSheet, DiskError> {
             .as_path(),
     )
     .unwrap();
+
+    drop(state);
+
     let saved_data = dnd_protos::protos::CharacterSheet::decode(data.as_ref());
     if saved_data.is_err() {
         return Err(DiskError::DecodeError);

@@ -10,7 +10,7 @@ fn init() {
             app_paths: crate::AppPaths {
                 user_data_path: PathBuf::from("./test_data_saved"),
                 sheet_path: PathBuf::from("./test_data"),
-                homebrew_path: PathBuf::from("src/tests/resources/homebrew"),
+                homebrew_path: PathBuf::from("generated/tests/homebrew"),
             },
         },
     });

@@ -58,7 +58,7 @@ pub fn generate_test_homebrew() {
         }],
         backgrounds: vec![],
     };
-    write_test_proto("palg", &palg_homebrew);
+    write_test_proto("homebrew/palg", &palg_homebrew);
 
     println!("cargo::rerun-if-changed=build/test_homebrew.rs");
 }

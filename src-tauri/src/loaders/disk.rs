@@ -19,7 +19,8 @@ pub fn load_disk_data() -> Result<UserData, DiskError> {
     let state = state.as_ref().unwrap();
 
     let paths = &state.user_data.app_paths;
-    if !Path::exists(state.user_data.app_paths.user_data_path.as_path()) {
+    if !Path::exists(paths.user_data_path.as_path()) {
+        println!("Creating missing folders {:?}", paths.user_data_path.as_path());
         _ = fs::create_dir_all(paths.user_data_path.as_path().parent().unwrap());
         _ = fs::write(paths.user_data_path.as_path(), "");
     }

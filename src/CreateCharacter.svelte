@@ -57,7 +57,6 @@
   loadClasses()
   loadRaces()
   loadSkills("none", "none")
-  // loadAbilities()
 
   let characterName = ''
   let className = 'undefined'

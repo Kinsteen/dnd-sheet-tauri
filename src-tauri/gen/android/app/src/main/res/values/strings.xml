@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">dnd-sheet-tauri</string>
+    <string name="main_activity_title">dnd-sheet-tauri</string>
+</resources>

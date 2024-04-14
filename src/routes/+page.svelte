@@ -1,49 +1,43 @@
 <script>
-import { Window } from '@tauri-apps/api/window';
-import { Webview } from '@tauri-apps/api/webview';
-  import Card from './lib/Card.svelte'
-  import Radio from './lib/Radio.svelte';
+  import { Window } from "@tauri-apps/api/window";
+  import { Webview } from "@tauri-apps/api/webview";
+  import Card from "$lib/Card.svelte";
+  import Radio from "$lib/Radio.svelte";
 
-  import { invoke } from "@tauri-apps/api/core"
-  import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
-  import { window } from '@tauri-apps/api';
+  import { invoke } from "@tauri-apps/api/core";
 
-  let abilitiesData = []
-  let skillsData = []
-  let counters = []
+  let abilitiesData = [];
+  let skillsData = [];
+  let counters = [];
   let health = undefined;
 
   async function loadAbilities() {
-    abilitiesData = await invoke("get_abilities_data")
-    console.log(abilitiesData)
+    abilitiesData = await invoke("get_abilities_data");
   }
 
   async function loadSkills() {
-    skillsData = await invoke("get_skills_data")
-    console.log(skillsData)
+    skillsData = await invoke("get_skills_data");
   }
 
   async function loadCounters() {
-    counters = await invoke("get_counters")
-    console.log(counters)
+    counters = await invoke("get_counters");
   }
 
   async function loadHealth() {
-    health = await invoke("get_health")
-    console.log(health)
+    health = await invoke("get_health");
   }
 
-  loadAbilities()
-  loadSkills()
-  loadCounters()
-  loadHealth()
+  loadAbilities();
+  loadSkills();
+  loadCounters();
+  loadHealth();
 </script>
 
 <main class="container">
   <div class="abilities-grid">
-    {#each abilitiesData as ability }
+    {#each abilitiesData as ability}
       <Card>
-        <div slot="title">{ability.name.substring(0,3)}</div>
+        <div slot="title">{ability.name.substring(0, 3)}</div>
         <div class="ability">
           <span class="modifier">{ability.modifier}</span>
           <span class="total">{ability.total}</span>
@@ -55,75 +49,62 @@ import { Webview } from '@tauri-apps/api/webview';
   <div class="main-info">
     <div class="main-column">
       <Card title="Skills">
-        {#each skillsData as skill }
-          <Radio checked={skill.proficient} modifier={skill.modifier} text={skill.name}></Radio>
+        {#each skillsData as skill}
+          <Radio
+            checked={skill.proficient}
+            modifier={skill.modifier}
+            text={skill.name}
+          ></Radio>
         {/each}
       </Card>
       <button on:click={loadAbilities}>Load abilities</button>
-      <button on:click={() => {
-        const window = new Window('label')
-        window.once('tauri://created', () => {
-          console.log("created")
-        })
-        window.once('tauri://error', e => {
-          console.log(e)
-        })
-        const w = new Webview(window, 'theUniqueLabel', {
-          url: '/create-character.html',
-          x: 0,
-          y: 0,
-          width: 500,
-          height:500
-        });
-
-        w.once('tauri://created', function () {
-          console.log("wv created")
-        });
-        w.once('tauri://error', function (e) {
-                  console.log(e)
-        });
-
-        w.position()
-
-        // webview.window.show().then(() => {
-        //   console.log("view showed")
-        // }).catch((e) => {
-        //   console.error(e)
-        // })
-      }}>Create character page</button>
+      <button
+        on:click={() => {
+          const window = new Window("label");
+          const w = new Webview(window, "theUniqueLabel", {
+            url: "/create-character",
+            x: 0,
+            y: 0,
+            width: 500,
+            height: 500,
+          });
+        }}>Create character page</button
+      >
     </div>
     <div class="main-column">
       <Card title="Saving throws">
-        {#each abilitiesData as ability }
-          <Radio checked={ability.saving_throw} modifier={ability.saving_throw_modifier} text={ability.name}></Radio>
+        {#each abilitiesData as ability}
+          <Radio
+            checked={ability.saving_throw}
+            modifier={ability.saving_throw_modifier}
+            text={ability.name}
+          ></Radio>
         {/each}
       </Card>
       <Card title="Health">
         <div class="health-main">
           <button>-</button>
           {#if health}
-          <div>{health.current}/{health.max}</div>
+            <div>{health.current}/{health.max}</div>
           {/if}
           <button>+</button>
         </div>
       </Card>
-      {#each counters as counter }
+      {#each counters as counter}
         <Card title={counter.name.replaceAll("_", " ")}>
           {counter.used}/{counter.max_uses}
         </Card>
       {/each}
     </div>
   </div>
-  <div class="footer">
-
-  </div>
+  <div class="footer"></div>
 </main>
 
 <style>
   .abilities-grid {
     /* TODO maybe? */
     /* position: sticky;
-    top: 0; */
+      top: 0; */
     background-color: #fff;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -143,7 +124,7 @@ import { Webview } from '@tauri-apps/api/webview';
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    gap: .25rem;
+    gap: 0.25rem;
     height: 100%;
   }
 
@@ -177,20 +158,20 @@ import { Webview } from '@tauri-apps/api/webview';
   }
 
   @media (max-height: 800px) {
-      .ability {
-        flex-direction: row;
-        height: 100%;
-      }
-
-      .ability > .modifier {
-        font-size: x-large;
-        line-height: 0;
-      }
-
-      .ability > .total {
-        font-size: small;
-      }
+    .ability {
+      flex-direction: row;
+      height: 100%;
     }
+
+    .ability > .modifier {
+      font-size: x-large;
+      line-height: 0;
+    }
+
+    .ability > .total {
+      font-size: small;
+    }
+  }
 
   .footer {
     display: block;
@@ -203,7 +184,7 @@ import { Webview } from '@tauri-apps/api/webview';
   }
 
   .main-info {
-    padding: .75rem;
+    padding: 0.75rem;
     padding-bottom: 7rem;
     display: grid;
     grid-template-columns: 1fr 1fr;

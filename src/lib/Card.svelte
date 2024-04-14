@@ -1,14 +1,23 @@
 <script>
-const SLOTS = $$props.$$slots
-export let title = ""
-export let bottomText = ""
+  const SLOTS = $$props.$$slots
+  export let title = ""
+  export let bottomText = ""
+
+  let titleHeight
+  let card
+
+  $: {
+    if (card && card.style && titleHeight > 0) {
+      card.style.paddingTop = (titleHeight-8) + "px"
+    }
+  }
 </script>
 
-<div class="card-standard-border">
+<div bind:this={card} class="card-standard-border">
   {#if title.length > 0}
-    <div class="card-standard-title">{title}</div>
+    <div bind:clientHeight={titleHeight} class="card-standard-title">{title}</div>
   {:else if SLOTS.title}
-    <div class="card-standard-title">
+    <div bind:clientHeight={titleHeight} class="card-standard-title">
       <slot name="title"></slot>
     </div>
   {/if}
@@ -33,14 +42,11 @@ export let bottomText = ""
     margin-bottom: .25rem;
   }
 
-  .card-standard-border:has(.card-standard-title) {
-    padding-top: 1.5rem;
-  }
-
   .card-standard-title {
     position: absolute;
     top: calc(-1rem - .125rem);
     left: .75rem;
+    max-width: 90%;
     background-color: var(--main-background-color);
     text-transform: uppercase;
     font-weight: bold;

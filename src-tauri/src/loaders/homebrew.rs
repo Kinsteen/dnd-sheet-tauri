@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs, sync::RwLock};
+use std::{collections::HashMap, fs, path::Path, sync::RwLock};
 
 use dnd_protos::protos::{BackgroundData, ClassData, RaceData, SkillData};
 use once_cell::sync::Lazy;
@@ -23,6 +23,11 @@ pub static DATA_CACHE: Lazy<Caches> = Lazy::new(|| Caches {
 pub fn load_in_cache() {
     let binding = crate::APP_STATE.read().unwrap();
     let state = binding.as_ref().unwrap();
+    
+    if !Path::exists(state.user_data.app_paths.homebrew_path.as_path()) {
+        _ = fs::create_dir_all(state.user_data.app_paths.homebrew_path.as_path());
+    }
+
     let paths = fs::read_dir(state.user_data.app_paths.homebrew_path.as_path()).unwrap();
     drop(binding);
 

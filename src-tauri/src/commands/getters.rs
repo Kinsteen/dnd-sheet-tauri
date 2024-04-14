@@ -1,7 +1,4 @@
-use dnd_protos::{
-    protos::*,
-    CharacterSheetBuilder,
-};
+use dnd_protos::{protos::*, CharacterSheetBuilder};
 
 use crate::{
     calculators::{
@@ -9,10 +6,15 @@ use crate::{
         classes::get_proficiency_bonus,
         health::get_max_health,
         utils::parse_expression,
-    }, list_skills, loaders::{
+    },
+    list_skills,
+    loaders::{
         homebrew::{load_in_cache, DATA_CACHE},
         r#static::get_full_class_name,
-    }, read_class, read_race, ui_data::{AbilitiesDataUI, ClassUi, CounterUI, HealthUI, SkillDataUI, SkillsUI}, GeneratedAsset, APP_STATE
+    },
+    read_class, read_race,
+    ui_data::{AbilitiesDataUI, ClassUi, CounterUI, HealthUI, SkillDataUI, SkillsUI},
+    GeneratedAsset, APP_STATE,
 };
 
 #[tauri::command]

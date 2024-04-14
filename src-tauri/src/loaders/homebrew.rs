@@ -74,8 +74,7 @@ pub fn load_in_cache() {
 /// the homebrew_test.
 #[macro_export]
 macro_rules! read_homebrew {
-    ($message_type:ident, $field:ident [$name:expr, $classdata:ident, $wrote:ident] => $($body:tt)*) => {
-        let mut $wrote = false;
+    ($message_type:ident, $field:ident [$name:expr, $classdata:ident] => $($body:tt)*) => {
         let cache = $crate::loaders::homebrew::DATA_CACHE.$field.read().unwrap();
         if !cache.contains_key($name) {
             // We can arrive here with multiple threads if we're unlucky. Should not be a problem,
@@ -96,31 +95,3 @@ macro_rules! read_homebrew {
         drop(cache);
     };
 }
-
-// #[macro_export]
-// macro_rules! read_homebrew_class {
-//     ([$name:expr, $classdata:ident, $wrote:ident] => $($body:tt)*) => {
-//         $crate::read_homebrew! { ClassData, classes [$name, $racedata, $wrote] =>
-//             $($body)*
-//         }
-//     };
-//     ([$name:expr, $classdata:ident] => $($body:tt)*) => {
-//         read_homebrew_class! { [$name, $classdata, _a] =>
-//             $($body)*
-//         }
-//     };
-// }
-
-// #[macro_export]
-// macro_rules! read_homebrew_race {
-//     ([$name:expr, $racedata:ident, $wrote:ident] => $($body:tt)*) => {
-//         $crate::read_homebrew! { RaceData, races [$name, $racedata, $wrote] =>
-//             $($body)*
-//         }
-//     };
-//     ([$name:expr, $racedata:ident] => $($body:tt)*) => {
-//         read_homebrew_race! { [$name, $racedata, _a] =>
-//             $($body)*
-//         }
-//     };
-// }

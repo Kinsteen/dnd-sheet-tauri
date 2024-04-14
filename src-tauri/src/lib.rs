@@ -95,6 +95,7 @@ pub mod loaders {
     pub mod r#static;
 }
 
+#[cfg(test)]
 mod tests {
     mod calculators {
         mod test_abilities;

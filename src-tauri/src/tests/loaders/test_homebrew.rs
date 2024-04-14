@@ -1,7 +1,5 @@
-#[cfg(test)]
 use crate::loaders::homebrew::load_in_cache;
 
-#[cfg(test)]
 fn init() {
     use std::path::PathBuf;
 
@@ -23,57 +21,48 @@ fn homebrew_test() {
     use crate::{read_class, read_race};
     init();
 
-    read_race!(["elf", race_data, write] => {
+    read_race!(["elf", race_data] => {
         assert!(race_data.is_some());
-        assert!(!write);
     });
 
-    read_race!(["godwalker_ra", race_data, write] => {
-        assert!(race_data.is_some());
-        let race_data = race_data.unwrap();
-        assert_eq!(race_data.name, "godwalker_ra");
-        assert_eq!(race_data.walking_speed, 30);
-        assert_eq!(race_data.size, "medium");
-        assert!(!write);
-    });
-
-    read_race!(["godwalker_ra", race_data, write] => {
+    read_race!(["godwalker_ra", race_data] => {
         assert!(race_data.is_some());
         let race_data = race_data.unwrap();
         assert_eq!(race_data.name, "godwalker_ra");
         assert_eq!(race_data.walking_speed, 30);
         assert_eq!(race_data.size, "medium");
-        assert!(!write);
     });
 
-    read_race!(["non_existent", race_data, write] => {
+    read_race!(["godwalker_ra", race_data] => {
+        assert!(race_data.is_some());
+        let race_data = race_data.unwrap();
+        assert_eq!(race_data.name, "godwalker_ra");
+        assert_eq!(race_data.walking_speed, 30);
+        assert_eq!(race_data.size, "medium");
+    });
+
+    read_race!(["non_existent", race_data] => {
         assert!(race_data.is_none());
-        assert!(!write); // Each time we search for something that doesn't exist, we read the FS
     });
 
-    read_race!(["ai", race_data, write] => {
+    read_race!(["ai", race_data] => {
         assert!(race_data.is_some());
-        assert!(!write); // already written when loading godwalker
     });
 
-    read_class!(["light_cleric", class_data, write] => {
+    read_class!(["light_cleric", class_data] => {
         assert!(class_data.is_some());
-        assert!(!write);
     });
 
-    read_class!(["blood_hunter", class_data, write] => {
+    read_class!(["blood_hunter", class_data] => {
         assert!(class_data.is_some());
-        assert!(!write);
     });
 
-    read_class!(["non_existent", class_data, write] => {
+    read_class!(["non_existent", class_data] => {
         assert!(class_data.is_none());
-        assert!(!write);
     });
 
-    read_class!(["blood_hunter", class_data, write] => {
+    read_class!(["blood_hunter", class_data] => {
         assert!(class_data.is_some());
-        assert!(!write);
     });
 
     // Concurrent tests, should not deadlock!

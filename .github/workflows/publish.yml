@@ -26,8 +26,6 @@ jobs:
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-unknown-linux-gnu # What for?
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2

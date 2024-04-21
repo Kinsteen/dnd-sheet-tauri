@@ -905,7 +905,7 @@ dependencies = [
 
 [[package]]
 name = "dnd_sheet_tauri"
-version = "0.0.0"
+version = "0.0.0-alpha1"
 dependencies = [
  "dnd_protos",
  "evalexpr",

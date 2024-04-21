@@ -1,21 +1,17 @@
+use std::fs;
+
 use dnd_protos::protos::*;
 
 use crate::{
     calculators::{
         abilities::{calculate, calculate_modifier, calculate_modifier_string, format_modifier},
-        classes::get_proficiency_bonus,
+        classes::{get_proficiency_bonus, get_total_level},
         health::get_max_health,
         utils::parse_expression,
-    },
-    helpers::sheet_builder::CharacterSheetBuilder,
-    list_skills,
-    loaders::{
+    }, helpers::sheet_builder::CharacterSheetBuilder, list_skills, load_sheet_from_path, loaders::{
         homebrew::{load_in_cache, DATA_CACHE},
         r#static::get_full_class_name,
-    },
-    read_class, read_race,
-    ui_data::{AbilitiesDataUI, ClassUi, CounterUI, HealthUI, SkillDataUI, SkillsUI},
-    GeneratedAsset, APP_STATE,
+    }, read_class, read_race, ui_data::{AbilitiesDataUI, BasicDataClassUI, BasicDataUI, ClassUi, CounterUI, HealthUI, SkillDataUI, SkillsUI}, GeneratedAsset, APP_STATE
 };
 
 #[tauri::command]
@@ -298,4 +294,57 @@ pub async fn calculate_ability(
         saving_throw: false,
         saving_throw_modifier: "".to_string(),
     })
+}
+
+
+#[tauri::command]
+pub async fn get_basic_data() -> Result<BasicDataUI, String> {
+    let state = crate::APP_STATE.read();
+    let sheet = state.as_ref().unwrap().user_data.sheet.as_ref().unwrap();
+
+    Ok(BasicDataUI {
+        character_name: sheet.character_name.clone(),
+        classes: sheet
+            .classes
+            .iter()
+            .map(|c| BasicDataClassUI {
+                name: c.name.clone(),
+                level: c.level,
+            })
+            .collect(),
+        race: sheet.race.as_ref().unwrap().name.clone(),
+        total_level: get_total_level(sheet),
+    })
+}
+
+#[tauri::command]
+pub async fn get_sheets() -> Result<Vec<BasicDataUI>, String> {
+    let state = crate::APP_STATE.read();
+    let sheets_path = &state.as_ref().unwrap().user_data.app_paths.sheet_path;
+    let paths = fs::read_dir(sheets_path).unwrap();
+
+    let mut vec = vec![];
+
+    for path in paths {
+        // println!("Name: {}", path.unwrap().path().file_name().unwrap().to_string_lossy());
+        let sheet = load_sheet_from_path(path.as_ref().unwrap().path().as_path());
+        if sheet.is_ok() {
+            let sheet = sheet.unwrap();
+            vec.push(BasicDataUI {
+                character_name: sheet.character_name.clone(),
+                classes: sheet
+                    .classes
+                    .iter()
+                    .map(|c| BasicDataClassUI {
+                        name: c.name.clone(),
+                        level: c.level,
+                    })
+                    .collect(),
+                race: sheet.race.as_ref().unwrap().name.clone(),
+                total_level: get_total_level(&sheet),
+            })
+        }
+    }
+
+    Ok(vec)
 }

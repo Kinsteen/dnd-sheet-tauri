@@ -2,16 +2,13 @@ use crate::calculators::health::get_max_health;
 use crate::commands::getters::*;
 use crate::helpers::sheet_builder::CharacterSheetBuilder;
 use crate::loaders::disk::*;
-use calculators::classes::get_total_level;
 use dnd_protos::protos::*;
 use once_cell::sync::Lazy;
 use parking_lot::RwLock;
 use rust_embed::RustEmbed;
 use std::collections::HashMap;
-use std::fs;
 use std::path::PathBuf;
 use tauri::Manager;
-use ui_data::{BasicDataClassUI, BasicDataUI};
 
 #[derive(RustEmbed)]
 #[folder = "./generated"]
@@ -266,58 +263,6 @@ async fn change_counter(name: String, value: i32) -> Result<(), String> {
     drop(state);
     save_current_sheet().unwrap();
     Ok(())
-}
-
-#[tauri::command]
-async fn get_basic_data() -> Result<BasicDataUI, String> {
-    let state = crate::APP_STATE.read();
-    let sheet = state.as_ref().unwrap().user_data.sheet.as_ref().unwrap();
-
-    Ok(BasicDataUI {
-        character_name: sheet.character_name.clone(),
-        classes: sheet
-            .classes
-            .iter()
-            .map(|c| BasicDataClassUI {
-                name: c.name.clone(),
-                level: c.level,
-            })
-            .collect(),
-        race: sheet.race.as_ref().unwrap().name.clone(),
-        total_level: get_total_level(sheet),
-    })
-}
-
-#[tauri::command]
-async fn get_sheets() -> Result<Vec<BasicDataUI>, String> {
-    let state = crate::APP_STATE.read();
-    let sheets_path = &state.as_ref().unwrap().user_data.app_paths.sheet_path;
-    let paths = fs::read_dir(sheets_path).unwrap();
-
-    let mut vec = vec![];
-
-    for path in paths {
-        // println!("Name: {}", path.unwrap().path().file_name().unwrap().to_string_lossy());
-        let sheet = load_sheet_from_path(path.as_ref().unwrap().path().as_path());
-        if sheet.is_ok() {
-            let sheet = sheet.unwrap();
-            vec.push(BasicDataUI {
-                character_name: sheet.character_name.clone(),
-                classes: sheet
-                    .classes
-                    .iter()
-                    .map(|c| BasicDataClassUI {
-                        name: c.name.clone(),
-                        level: c.level,
-                    })
-                    .collect(),
-                race: sheet.race.as_ref().unwrap().name.clone(),
-                total_level: get_total_level(&sheet),
-            })
-        }
-    }
-
-    Ok(vec)
 }
 
 #[tauri::command]

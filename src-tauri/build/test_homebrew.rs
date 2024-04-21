@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, vec};
 
 use crate::{str_vec_to_string_vec, write_test_proto};
 
@@ -48,6 +48,13 @@ pub fn generate_test_homebrew() {
         ..Default::default()
     };
 
+    let phd = BackgroundData {
+        name: "phd".to_string(),
+        languages_known: str_vec_to_string_vec(vec!["thingy"]),
+        skill_proficiencies: str_vec_to_string_vec(vec!["history", "religion"]),
+        tool_proficiencies: vec![],
+    };
+
     let palg_homebrew = Homebrew {
         name: "palg".to_string(),
         classes: vec![blood_hunter],
@@ -56,7 +63,7 @@ pub fn generate_test_homebrew() {
             name: "craftsmanship".to_string(),
             ability: "dexterity".to_string(),
         }],
-        backgrounds: vec![],
+        backgrounds: vec![phd],
     };
     write_test_proto("homebrew/palg", &palg_homebrew);
 

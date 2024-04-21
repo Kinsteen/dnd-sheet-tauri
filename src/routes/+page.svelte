@@ -192,6 +192,8 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     width: 100%;
+    gap: 1rem;
+    margin: 1rem;
   }
 
   .container {
@@ -205,27 +207,15 @@
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    gap: 0.25rem;
   }
 
   .ability > .modifier {
     font-size: xx-large;
-    line-height: 2rem;
   }
 
   .ability > .total {
     font-size: medium;
-    line-height: 1rem;
   }
-
-  .ability > .modifier {
-      font-size: x-large;
-      line-height: 0;
-    }
-
-    .ability > .total {
-      font-size: small;
-    }
 
   @media (width >= 650px) {
     .abilities-grid {
@@ -271,6 +261,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+    margin: 1rem;
   }
 
   .main-column {

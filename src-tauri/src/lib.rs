@@ -293,7 +293,6 @@ async fn change_sheet(name: String, app: tauri::AppHandle) -> Result<(), String>
 }
 
 fn setup_user_data(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
-    use tauri::Manager;
     if false {
         println!("Running in dev mode.");
         let mut state = crate::APP_STATE.write();
@@ -365,6 +364,7 @@ pub fn run() {
             get_health,
             get_available_classes,
             get_available_races,
+            get_available_backgrounds,
             create_sheet,
             get_available_skills,
             calculate_ability,

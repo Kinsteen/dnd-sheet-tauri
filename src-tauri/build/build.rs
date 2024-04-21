@@ -4,11 +4,13 @@ use std::fs;
 use std::io::Result;
 use std::path::Path;
 
+use backgrounds::*;
 use classes::*;
 use races::*;
 use skills::*;
 use test_homebrew::*;
 
+mod backgrounds;
 mod classes;
 mod races;
 mod skills;
@@ -45,6 +47,7 @@ fn main() -> Result<()> {
     let dest_path = Path::new(&root_dir).join("src/tests/resources");
     _ = fs::remove_dir_all(dest_path);
 
+    generate_backgrounds();
     generate_classes();
     generate_races();
     generate_skills();

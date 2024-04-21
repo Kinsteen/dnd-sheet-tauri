@@ -11,7 +11,7 @@ use crate::{
     }, helpers::sheet_builder::CharacterSheetBuilder, list_skills, load_sheet_from_path, loaders::{
         homebrew::{load_in_cache, DATA_CACHE},
         r#static::get_full_class_name,
-    }, read_class, read_race, ui_data::{AbilitiesDataUI, BasicDataClassUI, BasicDataUI, ClassUi, CounterUI, HealthUI, SkillDataUI, SkillsUI}, GeneratedAsset, APP_STATE
+    }, read_background, read_class, read_race, ui_data::{AbilitiesDataUI, BasicDataClassUI, BasicDataUI, ClassUi, CounterUI, HealthUI, SkillDataUI, SkillsUI}, GeneratedAsset, APP_STATE
 };
 
 #[tauri::command]
@@ -133,15 +133,14 @@ pub async fn get_counters() -> Result<Vec<CounterUI>, ()> {
                     if let Some(stuff) = sparse_map_get(class.level, &counter.max_uses) {
                         max_uses = parse_expression(stuff, sheet).expect("Parsing didn't go well!");
                     }
-                    // TODO should this be here?
-                    if !sheet.counters.iter().any(|c| c.name.eq(&counter.name)) {
-                        sheet.counters.push(Counter { name: counter.name.clone(), used: 0 });
+
+                    if max_uses > 0 {
+                        vec.push(CounterUI {
+                            name: counter.name.clone(),
+                            used: sheet.counters.iter().find(|c| c.name.eq(&counter.name)).unwrap().used,
+                            max_uses: max_uses as i32,
+                        });
                     }
-                    vec.push(CounterUI {
-                        name: counter.name.clone(),
-                        used: sheet.counters.iter().find(|c| c.name.eq(&counter.name)).unwrap().used,
-                        max_uses: max_uses as i32,
-                    });
                 }
             } else {
                 eprintln!("Didn't find {}", full_class_name);
@@ -220,16 +219,43 @@ pub async fn get_available_races() -> Result<Vec<ClassUi>, ()> {
 }
 
 #[tauri::command]
+pub async fn get_available_backgrounds() -> Result<Vec<ClassUi>, ()> {
+    load_in_cache(); // Load homebrews
+    let mut vec = vec![];
+
+    for path in GeneratedAsset::iter() {
+        if let Some(name) = path.strip_prefix("backgrounds/") {
+            vec.push(ClassUi {
+                name: name.to_string(),
+            });
+        }
+    }
+
+    let backgrounds_cache = DATA_CACHE.backgrounds.read();
+    for (name, _data) in backgrounds_cache.iter() {
+        vec.push(ClassUi {
+            name: name.to_string(),
+        });
+    }
+    drop(backgrounds_cache);
+
+    vec.sort_by(|a, b| a.name.cmp(&b.name));
+
+    Ok(vec)
+}
+
+#[tauri::command]
 pub async fn get_available_skills(
     class_name: String,
     race_name: String,
-) -> Result<(SkillsUI, SkillsUI, SkillsUI), String> {
+    background_name: String,
+) -> Result<(SkillsUI, SkillsUI, SkillsUI, SkillsUI), String> {
     let mut skills_class = vec![];
     let mut skills_race = vec![];
+    let mut skills_background = vec![];
     let mut pick_class = 0;
     let mut pick_race = 0;
-
-    // TODO background skills
+    let mut pick_background = 0;
 
     read_class!([&class_name, class_data] => {
         if let Some(class) = class_data {
@@ -249,7 +275,17 @@ pub async fn get_available_skills(
         }
     });
 
+    read_background!([&background_name, background_data] => {
+        if let Some(background) = background_data {
+            for skill in background.skill_proficiencies.clone() {
+                skills_background.push(skill);
+            }
+            pick_background = background.skill_proficiencies.len() as i32;
+        }
+    });
+
     load_in_cache(); // Load homebrews
+
     Ok((
         SkillsUI {
             num_to_pick: pick_class,
@@ -258,6 +294,10 @@ pub async fn get_available_skills(
         SkillsUI {
             num_to_pick: pick_race,
             skills: skills_race,
+        },
+        SkillsUI {
+            num_to_pick: pick_background,
+            skills: skills_background,
         },
         SkillsUI {
             num_to_pick: 0,

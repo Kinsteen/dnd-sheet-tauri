@@ -4,6 +4,7 @@
 
   let classes = []
   let races = []
+  let backgrounds = []
   let abilities = [
     {name: "strength"},
     {name: "dexterity"},
@@ -14,13 +15,17 @@
   ]
   let skillsClass = []
   let skillsRace = []
+  let skillsBackground = []
   let numPickClass = 0
   let numPickRace = 0
+  let numPickBackground = 0
   let skills = []
-  let allSkills = []
 
-  let tempChecked = {}
-  let floatingSkills = {} // key is concat, sorted
+  let tempChecked = {
+    class: {},
+    race: {},
+    background: {},
+  }
 
   async function loadClasses() {
     classes = await invoke("get_available_classes")
@@ -30,43 +35,37 @@
     races = await invoke("get_available_races")
   }
 
-  function loadSkills(className, raceName) {
+  async function loadBackgrounds() {
+    backgrounds = await invoke("get_available_backgrounds")
+  }
+
+  function loadSkills(className, raceName, backgroundName) {
     invoke("get_available_skills", {
       className: className,
-      raceName: raceName
+      raceName: raceName,
+      backgroundName: backgroundName,
     }).then(r => {
-      skills = []
-      r[2].skills.forEach(skillName => {
-        skills.push({name: skillName, from: []})
-      });
       skillsClass = r[0].skills
-      skillsClass.forEach(skill => {
-        let idx = skills.findIndex(s => s.name == skill)
-        skills[idx].from.push("class")
-      });
       skillsRace = r[1].skills
-      skillsRace.forEach(skill => {
-        let idx = skills.findIndex(s => s.name == skill)
-        skills[idx].from.push("race")
-      });
+      skillsBackground = r[2].skills
       numPickClass = r[0].num_to_pick
       numPickRace = r[1].num_to_pick
+      numPickBackground = r[2].num_to_pick
     })
   }
 
   loadClasses()
   loadRaces()
-  loadSkills("none", "none")
+  loadBackgrounds()
+  loadSkills("none", "none", "none")
 
   let characterName = ''
   let className = 'undefined'
   let raceName = 'undefined'
+  let backgroundName = 'undefined'
   let healthMean = 'mean'
   let abilitiesValues = {}
   let calculatedAbilitiesValues = {}
-  let skillsCheckedClass = []
-  let skillsCheckedRace = []
-  let skillsCheckedBackground = []
 
   const errorMessage = writable('')
 
@@ -82,7 +81,7 @@
   <div>
     <label for="class">Pick a class:</label>
     <select on:change={e => {
-      loadSkills(e.target.value, raceName)
+      loadSkills(e.target.value, raceName, backgroundName)
     }} bind:value={className} name="class" id="class">
       <option value="undefined">Choose a class...</option>
       {#each classes as cl}
@@ -94,12 +93,24 @@
   <div>
     <label for="race">Pick a race:</label>
     <select on:change={e => {
-      loadSkills(className, e.target.value)
+      loadSkills(className, e.target.value, backgroundName)
       // TODO update ability scores
     }} bind:value={raceName} name="race" id="race">
       <option value="undefined">Choose a race...</option>
       {#each races as r}
         <option value={r.name}>{r.name}</option>
+      {/each}
+    </select>
+  </div>
+  <div>
+    <label for="race">Pick a background:</label>
+    <select on:change={e => {
+      loadSkills(className, raceName, e.target.value)
+      // TODO update ability scores
+    }} bind:value={backgroundName} name="background" id="background">
+      <option value="undefined">Choose a background...</option>
+      {#each backgrounds as b}
+        <option value={b.name}>{b.name}</option>
       {/each}
     </select>
   </div>
@@ -140,17 +151,24 @@
     Skills from your class: (pick {numPickClass})
     {#each skillsClass as skill}
       <div>
-        <input type="checkbox" bind:checked={tempChecked[skill]} />
+        <input type="checkbox" bind:checked={tempChecked["class"][skill]} />
         <span class="skill-class">{skill}</span>
       </div>
     {/each}
     Skills from your race: (pick {numPickRace})
     {#each skillsRace as skill}
-    <div>
-      <input type="checkbox" bind:checked={tempChecked[skill]} />
-      <span class="skill-race">{skill}</span>
-    </div>
-  {/each}
+      <div>
+        <input type="checkbox" bind:checked={tempChecked["race"][skill]} />
+        <span class="skill-race">{skill}</span>
+      </div>
+    {/each}
+    Skills from your background: (pick {numPickBackground})
+    {#each skillsBackground as skill}
+      <div>
+        <input type="checkbox" bind:checked={tempChecked["background"][skill]} />
+        <span class="skill-background">{skill}</span>
+      </div>
+    {/each}
   </div>
   {#if $errorMessage.length > 0}
     <div>
@@ -158,26 +176,24 @@
     </div>
   {/if}
   <button on:click={() => {
+    console.log(tempChecked)
     // console.log(Object.fromEntries(Object.entries(skillsChecked).filter(([k,v]) => console.log(v))))
-    invoke("create_sheet", {
-      characterName: characterName,
-      class: className,
-      race: raceName,
-      healthSystemMean: healthMean == "mean",
-      abilities: abilitiesValues,
-      skills: ["test1", "test2"]
-    }).then(() => {
-      errorMessage.set('')
-    }).catch(e => {
-      errorMessage.set(e)
-    })
+    // invoke("create_sheet", {
+    //   characterName: characterName,
+    //   class: className,
+    //   race: raceName,
+    //   healthSystemMean: healthMean == "mean",
+    //   abilities: abilitiesValues,
+    //   skills: ["test1", "test2"]
+    // }).then(() => {
+    //   errorMessage.set('')
+    // }).catch(e => {
+    //   errorMessage.set(e)
+    // })
   }}>Create & load character</button>
 </div>
 
 <style>
-  span.skill- {
-    font-style: italic;
-  }
   span.skill-class {
     color: red;
     font-weight: bold;
@@ -185,10 +201,6 @@
 
   span.skill-race {
     color: blue;
-    font-weight: bold;
-  }
-  span.skill-class-race {
-    color: purple;
     font-weight: bold;
   }
 </style>

@@ -58,7 +58,7 @@ macro_rules! read_background {
         use dnd_protos::protos::BackgroundData;
         let builtin = $crate::read_proto!(format!("backgrounds/{}", $name), BackgroundData);
         if builtin.is_some() {
-            let $race_data = builtin; // Move
+            let $bg_data = builtin; // Move
             $($body)*
         } else {
             $crate::read_homebrew! { BackgroundData, backgrounds [$name, $bg_data] =>

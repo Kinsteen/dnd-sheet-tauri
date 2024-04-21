@@ -10,6 +10,11 @@
   ],
   "permissions": [
     "window:allow-create",
-    "webview:allow-create-webview"
+    "webview:allow-create-webview",
+    "path:allow-resolve",
+    "path:allow-resolve-directory",
+    "webview:allow-internal-toggle-devtools",
+    "shell:allow-open",
+    "event:allow-listen"
   ]
 }

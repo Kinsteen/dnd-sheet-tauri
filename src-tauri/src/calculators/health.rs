@@ -26,7 +26,7 @@ pub fn get_max_health(sheet: &CharacterSheet) -> i32 {
         hit_die = class_data.unwrap().hit_die;
     });
 
-    let con_mod = calculate_modifier("constitution", sheet).unwrap();
+    let con_mod = calculate_modifier("constitution", sheet).unwrap_or(0);
     let mut total_health = hit_die + con_mod;
 
     match health_system_clone.unwrap() {

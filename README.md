@@ -12,15 +12,22 @@ This desktop app tries to be a replacement of D&D Beyond.
 		- [x] calculated, with the correct modifier
 	- [x]  Skills, with correct calculated modifier
 	- [x] Saving throws
-	- [ ] Health
-		- [ ] current
-		- [ ] max
+	- [X] Health
+		- [X] current
+		- [X] max
 		- [ ] temporary
 		- [ ] total
+		- [X] Can modify directly from the sheet
 	- [ ] Spells
 		- [ ] Spell slots
 		- [ ] Current prepared spells
 		- [ ] Their effect, damage...
+	- [X] Class counters
+		- [X] Name
+		- [X] Used
+		- [X] Max uses
+		- [ ] When resets (short rest/long rest/custom)
+		- [X] Can modify directly from the sheet
 - [ ] Users can edit (and create) their character with ease
 	- [ ] Levels
 	- [ ] Ability scores
@@ -30,6 +37,7 @@ This desktop app tries to be a replacement of D&D Beyond.
 - [ ] Users can import and export their characters to someone else
 	- [ ] Protobuf
 	- [ ] Json if possible, so it's easier to read?
+- [ ] Page to see what happens on short/long rest (health, counters, ...)
 - [ ] Users can create homebrew content with Rust code
 - [ ] Users can create homebrew content with UI? (Not sure if it's the goal)
 - [ ] Save and load information dynamically
@@ -42,6 +50,7 @@ This desktop app tries to be a replacement of D&D Beyond.
 		- [ ] Spells
 		- [ ] Should also be able to be read from disk with user content (or paid non-SRD content)
 			- [ ] Users can drag and drop homebrew files directly in the app to install new content
+			- [ ] Read from protobuf data or JSON (with serde). Check file extension
 			- [ ] Other window that manages homebrew (per homebrew item (class, race, ..)? per campaign?)
 				- [ ] Install from file
 				- [ ] Disable homebrew (will unload current sheet if it has homebrew from it)

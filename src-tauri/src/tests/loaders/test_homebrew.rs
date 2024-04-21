@@ -3,7 +3,7 @@ use crate::loaders::homebrew::load_in_cache;
 fn init() {
     use std::path::PathBuf;
 
-    let mut state = crate::APP_STATE.write().unwrap();
+    let mut state = crate::APP_STATE.write();
     *state = Some(crate::State {
         user_data: crate::UserData {
             sheet: None,

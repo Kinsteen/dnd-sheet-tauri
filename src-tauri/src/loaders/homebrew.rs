@@ -1,11 +1,11 @@
-use std::{collections::HashMap, fs, path::Path, sync::RwLock};
+use std::{collections::HashMap, fs, path::Path};
 
 use dnd_protos::protos::{BackgroundData, ClassData, RaceData, SkillData};
 use once_cell::sync::Lazy;
+use parking_lot::RwLock;
 use prost::Message;
 
-// Field name should match field name in Homebrew struct
-// Field type should match field type in Homebrew struct
+// Field (name|type) should match field (name|type) in Homebrew struct
 pub struct Caches {
     pub classes: RwLock<HashMap<String, ClassData>>,
     pub races: RwLock<HashMap<String, RaceData>>,
@@ -21,9 +21,9 @@ pub static DATA_CACHE: Lazy<Caches> = Lazy::new(|| Caches {
 });
 
 pub fn load_in_cache() {
-    let binding = crate::APP_STATE.read().unwrap();
+    let binding = crate::APP_STATE.read();
     let state = binding.as_ref().unwrap();
-    
+
     if !Path::exists(state.user_data.app_paths.homebrew_path.as_path()) {
         _ = fs::create_dir_all(state.user_data.app_paths.homebrew_path.as_path());
     }
@@ -36,25 +36,25 @@ pub fn load_in_cache() {
         let data = fs::read(real_path).unwrap();
         let homebrew = dnd_protos::protos::Homebrew::decode(data.as_ref()).unwrap();
 
-        let mut cache = DATA_CACHE.classes.write().unwrap();
+        let mut cache = DATA_CACHE.classes.write();
         for class in homebrew.classes {
             cache.insert(class.name.clone(), class);
         }
         drop(cache);
 
-        let mut cache = DATA_CACHE.races.write().unwrap();
+        let mut cache = DATA_CACHE.races.write();
         for race in homebrew.races {
             cache.insert(race.name.clone(), race);
         }
         drop(cache);
 
-        let mut cache = DATA_CACHE.skills.write().unwrap();
+        let mut cache = DATA_CACHE.skills.write();
         for skill in homebrew.skills {
             cache.insert(skill.name.clone(), skill);
         }
         drop(cache);
 
-        let mut cache = DATA_CACHE.backgrounds.write().unwrap();
+        let mut cache = DATA_CACHE.backgrounds.write();
         for background in homebrew.backgrounds {
             cache.insert(background.name.clone(), background);
         }
@@ -80,7 +80,7 @@ pub fn load_in_cache() {
 #[macro_export]
 macro_rules! read_homebrew {
     ($message_type:ident, $field:ident [$name:expr, $classdata:ident] => $($body:tt)*) => {
-        let cache = $crate::loaders::homebrew::DATA_CACHE.$field.read().unwrap();
+        let cache = $crate::loaders::homebrew::DATA_CACHE.$field.read();
         if !cache.contains_key($name) {
             // We can arrive here with multiple threads if we're unlucky. Should not be a problem,
             // but may do unnecessary fs read.
@@ -93,8 +93,8 @@ macro_rules! read_homebrew {
             drop(cache);
         }
 
-        // Reopen read cache. Should drop cache if it's still open
-        let cache = $crate::loaders::homebrew::DATA_CACHE.$field.read().unwrap();
+        // Cache is always dropped before
+        let cache = $crate::loaders::homebrew::DATA_CACHE.$field.read();
         let $classdata = cache.get($name);
         $($body)*
         drop(cache);

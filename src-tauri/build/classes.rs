@@ -114,6 +114,7 @@ pub fn generate_classes() {
         custom_property: None,
     };
     write_proto("classes/barbarian", &barbarian);
+    // let test = serde_json::to_string_pretty(&barbarian).unwrap();
 
     let bard = ClassData {
         name: "bard".to_string(),

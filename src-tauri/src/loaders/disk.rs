@@ -10,8 +10,9 @@ pub enum DiskError {
     FileNotFound,
 }
 
-pub fn load_disk_data() -> Result<UserData, DiskError> {
-    let state = crate::APP_STATE.read().unwrap();
+/// Reads from APP_STATE
+pub fn load_current_user_data() -> Result<UserData, DiskError> {
+    let state = crate::APP_STATE.read();
     if state.is_none() {
         return Err(DiskError::NoState);
     }
@@ -20,7 +21,10 @@ pub fn load_disk_data() -> Result<UserData, DiskError> {
 
     let paths = &state.user_data.app_paths;
     if !Path::exists(paths.user_data_path.as_path()) {
-        println!("Creating missing folders {:?}", paths.user_data_path.as_path());
+        println!(
+            "Creating missing folders {:?}",
+            paths.user_data_path.as_path()
+        );
         _ = fs::create_dir_all(paths.user_data_path.as_path().parent().unwrap());
         _ = fs::write(paths.user_data_path.as_path(), "");
     }
@@ -34,9 +38,9 @@ pub fn load_disk_data() -> Result<UserData, DiskError> {
     Ok(saved_data.unwrap())
 }
 
-fn save_user_data(data: dnd_protos::protos::UserData) -> Result<(), DiskError> {
-    println!("Writing to disk");
-    let state = crate::APP_STATE.read().unwrap();
+/// Reads from APP_STATE
+fn save_user_data_to_disk(data: dnd_protos::protos::UserData) -> Result<(), DiskError> {
+    let state = crate::APP_STATE.read();
     if state.is_none() {
         return Err(DiskError::NoState);
     }
@@ -52,8 +56,9 @@ fn save_user_data(data: dnd_protos::protos::UserData) -> Result<(), DiskError> {
     Ok(())
 }
 
-pub fn save_disk_data() -> Result<(), DiskError> {
-    let state = crate::APP_STATE.read().unwrap();
+/// Reads from APP_STATE
+pub fn save_current_user_data() -> Result<(), DiskError> {
+    let state = crate::APP_STATE.read();
     if state.is_none() {
         return Err(DiskError::NoState);
     }
@@ -65,51 +70,24 @@ pub fn save_disk_data() -> Result<(), DiskError> {
             loaded_sheet: sheet.character_name.clone(),
         };
 
-        save_user_data(data)?;
+        save_user_data_to_disk(data)?;
         Ok(())
     } else {
         let data = dnd_protos::protos::UserData {
             loaded_sheet: String::new(),
         };
 
-        save_user_data(data)?;
+        save_user_data_to_disk(data)?;
         Ok(())
     }
 }
 
-pub fn load_sheet() -> Result<CharacterSheet, DiskError> {
-    let disk_data = load_disk_data()?;
-    let state = crate::APP_STATE.read().unwrap();
-    if state.is_none() {
-        return Err(DiskError::NoState);
-    }
-
-    if !Path::is_file(
-        state
-            .as_ref()
-            .unwrap()
-            .user_data
-            .app_paths
-            .sheet_path
-            .join(&disk_data.loaded_sheet)
-            .as_path(),
-    ) {
+pub fn load_sheet_from_path(path: &Path) -> Result<CharacterSheet, DiskError> {
+    if !Path::is_file(path) {
         return Err(DiskError::FileNotFound);
     }
 
-    let data = fs::read(
-        state
-            .as_ref()
-            .unwrap()
-            .user_data
-            .app_paths
-            .sheet_path
-            .join(&disk_data.loaded_sheet)
-            .as_path(),
-    )
-    .unwrap();
-
-    drop(state);
+    let data = fs::read(path).unwrap();
 
     let saved_data = dnd_protos::protos::CharacterSheet::decode(data.as_ref());
     if saved_data.is_err() {
@@ -119,11 +97,33 @@ pub fn load_sheet() -> Result<CharacterSheet, DiskError> {
     Ok(saved_data.unwrap())
 }
 
-pub fn save_sheet(sheet: &CharacterSheet) -> Result<(), DiskError> {
+/// Reads from APP_STATE
+pub fn load_current_sheet() -> Result<CharacterSheet, DiskError> {
+    let disk_data = load_current_user_data()?;
+    let state = crate::APP_STATE.read();
+    if state.is_none() {
+        return Err(DiskError::NoState);
+    }
+
+    let data = load_sheet_from_path(
+        state
+            .as_ref()
+            .unwrap()
+            .user_data
+            .app_paths
+            .sheet_path
+            .join(disk_data.loaded_sheet)
+            .as_path(),
+    )?;
+    Ok(data)
+}
+
+/// Reads from APP_STATE (paths)
+pub fn save_sheet_to_disk(sheet: &CharacterSheet) -> Result<(), DiskError> {
     let mut buf = vec![];
     _ = sheet.encode(&mut buf);
 
-    let state = crate::APP_STATE.read().unwrap();
+    let state = crate::APP_STATE.read();
     if state.is_none() {
         return Err(DiskError::NoState);
     }
@@ -141,11 +141,12 @@ pub fn save_sheet(sheet: &CharacterSheet) -> Result<(), DiskError> {
     Ok(())
 }
 
+/// Reads from APP_STATE (save_sheet_to_disk)
 pub fn save_current_sheet() -> Result<(), DiskError> {
-    let state = crate::APP_STATE.read().unwrap();
+    let state = crate::APP_STATE.read();
     if state.is_none() {
         return Err(DiskError::NoState);
     }
 
-    save_sheet(state.as_ref().unwrap().user_data.sheet.as_ref().unwrap())
+    save_sheet_to_disk(state.as_ref().unwrap().user_data.sheet.as_ref().unwrap())
 }

@@ -30,9 +30,7 @@ fn write_proto(name: &str, data: &impl Message) {
 
 fn write_test_proto(name: &str, data: &impl Message) {
     let root_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let dest_path = Path::new(&root_dir)
-        .join("generated/tests")
-        .join(name);
+    let dest_path = Path::new(&root_dir).join("generated/tests").join(name);
     _ = fs::create_dir_all(dest_path.parent().unwrap());
     let mut buf = vec![];
     _ = data.encode(&mut buf);

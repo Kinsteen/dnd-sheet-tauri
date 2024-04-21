@@ -2,7 +2,7 @@ use std::io::Result;
 
 fn main() -> Result<()> {
     tonic_build::configure()
-        //.type_attribute("ClericLight", "#[derive(serde::Deserialize, serde::Serialize)]")
+        .type_attribute(".", "#[derive(serde::Deserialize, serde::Serialize)]")
         .compile(
             &[
                 "src/protos/dnd_data.proto",

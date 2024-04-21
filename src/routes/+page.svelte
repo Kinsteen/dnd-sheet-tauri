@@ -3,6 +3,9 @@
   import { Webview } from "@tauri-apps/api/webview";
   import Card from "$lib/Card.svelte";
   import Radio from "$lib/Radio.svelte";
+  import { open } from '@tauri-apps/plugin-shell';
+  import { appDataDir } from '@tauri-apps/api/path';
+  import { listen } from '@tauri-apps/api/event'
 
   import { invoke } from "@tauri-apps/api/core";
 
@@ -10,6 +13,19 @@
   let skillsData = [];
   let counters = [];
   let health = undefined;
+
+  let characterName = "Emily Solis"
+  let classes = [{name: "Light Cleric", level: 3}]
+  let race = "Godwalker"
+  let totalLevel = 5
+
+  async function loadInfos() {
+    let data = await invoke("get_basic_data");
+    characterName = data.character_name
+    classes = data.classes
+    race = data.race
+    totalLevel = data.total_level
+  }
 
   async function loadAbilities() {
     abilitiesData = await invoke("get_abilities_data");
@@ -27,13 +43,59 @@
     health = await invoke("get_health");
   }
 
-  loadAbilities();
-  loadSkills();
-  loadCounters();
-  loadHealth();
+  async function loadSheet() {
+    loadInfos()
+    loadAbilities()
+    loadSkills()
+    loadCounters()
+    loadHealth()
+  }
+
+  loadSheet()
+
+  listen('reload-sheet', (event) => {
+    console.log("Reloading sheet because backend said so")
+    loadSheet()
+  }).then(() => {
+  }).catch((e) => {
+    console.error(e)
+  })
 </script>
 
+<div>
+  <a href="/settings">Settings</a>
+</div>
+
 <main class="container">
+  <div style="margin: 0rem 1rem; flex-basis: 100%">
+    <Card title="Basic Infos">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 10%;">
+        <div style="display:flex; flex-direction: column; justify-content: center;align-items: center; border-right: 2px solid black;">
+          <div style="display:flex; flex-direction: column">
+            <span style="font-weight: bold; font-size: x-large;">{characterName}</span>
+            <span style="font-style: italic; font-size: smaller;">Character name</span>
+          </div>
+        </div>
+        <div style="display: grid;">
+          <div style="grid-column: 2; grid-row: 1 / span 2; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <span style="font-weight: bold; font-size: xx-large;">{totalLevel}</span>
+            <span style="font-style: italic; font-size: smaller;">Level</span>
+          </div>
+          <div style="grid-column: 1; grid-row: 1; display: flex; flex-direction: column">
+            {#each classes as cl}
+              <span style="font-weight: bold; text-transform: capitalize;">{cl.name.replaceAll("_", " ")} {cl.level}</span>
+            {/each}
+            <span style="font-style: italic; font-size: smaller;">Classes</span>
+          </div>
+          <div style="grid-column: 1; grid-row: 2; display: flex; flex-direction: column">
+            <span style="font-weight: bold; text-transform: capitalize;">{race}</span>
+            <span style="font-style: italic; font-size: smaller;">Race</span>
+          </div>
+        </div>
+      </div>
+    </Card>
+  </div>
+
   <div class="abilities-grid">
     {#each abilitiesData as ability}
       <Card>
@@ -57,7 +119,6 @@
           ></Radio>
         {/each}
       </Card>
-      <button on:click={loadAbilities}>Load abilities</button>
       <button
         on:click={() => {
           const window = new Window("label");
@@ -70,6 +131,12 @@
           });
         }}>Create character page</button
       >
+      <button on:click={() => {
+        appDataDir().then(path => {
+          console.log(path)
+          open(path)
+        })
+      }}>Open dir</button>
     </div>
     <div class="main-column">
       <Card title="Saving throws">
@@ -83,16 +150,36 @@
       </Card>
       <Card title="Health">
         <div class="health-main">
-          <button>-</button>
+          <button on:click={() => {
+            invoke('change_health', {value: -1}).then(() => {
+              loadHealth()
+            })
+          }}>-</button>
           {#if health}
             <div>{health.current}/{health.max}</div>
           {/if}
-          <button>+</button>
+          <button on:click={() => {
+            invoke('change_health', {value: 1}).then(() => {
+              loadHealth()
+            })
+          }}>+</button>
         </div>
       </Card>
       {#each counters as counter}
         <Card title={counter.name.replaceAll("_", " ")}>
+          <div class="health-main">
+          <button on:click={() => {
+            invoke('change_counter', {name: counter.name, value: -1}).then(() => {
+              loadCounters()
+            })
+          }}>-</button>
           {counter.used}/{counter.max_uses}
+          <button on:click={() => {
+            invoke('change_counter', {name: counter.name, value: 1}).then(() => {
+              loadCounters()
+            })
+          }}>+</button>
+          </div>
         </Card>
       {/each}
     </div>
@@ -102,30 +189,23 @@
 
 <style>
   .abilities-grid {
-    /* TODO maybe? */
-    /* position: sticky;
-      top: 0; */
-    background-color: #fff;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 1rem;
-    padding: 1rem;
     width: 100%;
   }
 
   .container {
     display: flex;
-    flex-direction: column;
-    grid-template-columns: 1fr;
+    flex-wrap: wrap;
+    height: 100%;
   }
 
   .ability {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-around;
     align-items: center;
     gap: 0.25rem;
-    height: 100%;
   }
 
   .ability > .modifier {
@@ -138,29 +218,31 @@
     line-height: 1rem;
   }
 
-  @media (min-width: 650px) {
-    .abilities-grid {
-      grid-template-columns: 1fr;
-      width: 10rem;
-      height: 100vh;
+  .ability > .modifier {
+      font-size: x-large;
+      line-height: 0;
     }
 
-    .container {
-      /* display: flex; grid doesn't work? */
-      grid-template-columns: 2fr;
-      flex-direction: row;
+    .ability > .total {
+      font-size: small;
+    }
+
+  @media (width >= 650px) {
+    .abilities-grid {
+      align-self: stretch;
+      grid-template-columns: 1fr;
+      width: 8rem;
     }
 
     .main-info {
-      width: fill-available;
-      width: -webkit-fill-available;
+      /* width: fill-available;
+      width: -webkit-fill-available; */
     }
   }
 
-  @media (max-height: 800px) {
+  /* @container (height <= 600px) {
     .ability {
       flex-direction: row;
-      height: 100%;
     }
 
     .ability > .modifier {
@@ -171,7 +253,7 @@
     .ability > .total {
       font-size: small;
     }
-  }
+  } */
 
   .footer {
     display: block;
@@ -184,7 +266,7 @@
   }
 
   .main-info {
-    padding: 0.75rem;
+    flex-grow: 1;
     padding-bottom: 7rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -197,7 +279,7 @@
     gap: 1rem;
   }
 
-  @media (min-width: 650px) {
+  @media (width >= 650px) {
     .footer {
       display: none;
     }

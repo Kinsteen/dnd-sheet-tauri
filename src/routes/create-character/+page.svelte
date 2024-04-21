@@ -159,18 +159,18 @@
   {/if}
   <button on:click={() => {
     // console.log(Object.fromEntries(Object.entries(skillsChecked).filter(([k,v]) => console.log(v))))
-    // invoke("create_sheet", {
-    //   characterName: characterName,
-    //   class: className,
-    //   race: raceName,
-    //   healthSystemMean: healthMean == "mean",
-    //   abilities: abilitiesValues,
-    //   skills: ["test1", "test2"]
-    // }).then(() => {
-    //   errorMessage.set('')
-    // }).catch(e => {
-    //   errorMessage.set(e)
-    // })
+    invoke("create_sheet", {
+      characterName: characterName,
+      class: className,
+      race: raceName,
+      healthSystemMean: healthMean == "mean",
+      abilities: abilitiesValues,
+      skills: ["test1", "test2"]
+    }).then(() => {
+      errorMessage.set('')
+    }).catch(e => {
+      errorMessage.set(e)
+    })
   }}>Create & load character</button>
 </div>
 

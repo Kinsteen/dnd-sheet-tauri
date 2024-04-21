@@ -1,4 +1,4 @@
-use dnd_protos::{protos::*, CharacterSheetBuilder};
+use dnd_protos::protos::*;
 
 use crate::{
     calculators::{
@@ -7,6 +7,7 @@ use crate::{
         health::get_max_health,
         utils::parse_expression,
     },
+    helpers::sheet_builder::CharacterSheetBuilder,
     list_skills,
     loaders::{
         homebrew::{load_in_cache, DATA_CACHE},
@@ -19,7 +20,7 @@ use crate::{
 
 #[tauri::command]
 pub fn get_abilities_data() -> Vec<AbilitiesDataUI> {
-    let state = crate::APP_STATE.read().unwrap();
+    let state = crate::APP_STATE.read();
     if state.is_none() {
         println!("state is none");
         return vec![];
@@ -66,7 +67,7 @@ pub fn get_abilities_data() -> Vec<AbilitiesDataUI> {
 
 #[tauri::command]
 pub fn get_skills_data() -> Vec<SkillDataUI> {
-    let state = crate::APP_STATE.read().unwrap();
+    let state = crate::APP_STATE.read();
     if state.is_none() {
         return vec![];
     }
@@ -111,17 +112,17 @@ pub async fn get_counters() -> Result<Vec<CounterUI>, ()> {
 
     use crate::calculators::utils::sparse_map_get;
 
-    let state = crate::APP_STATE.read().unwrap();
+    let mut state = crate::APP_STATE.write();
     if state.is_none() {
         return Ok(vec![]);
     }
 
-    let unwrapped_state = state.as_ref().unwrap();
+    let unwrapped_state = state.as_mut().unwrap();
     if unwrapped_state.user_data.sheet.is_none() {
         return Ok(vec![]);
     }
 
-    let sheet = unwrapped_state.user_data.sheet.as_ref().unwrap();
+    let sheet = unwrapped_state.user_data.sheet.as_mut().unwrap();
 
     let mut vec = vec![];
 
@@ -133,12 +134,16 @@ pub async fn get_counters() -> Result<Vec<CounterUI>, ()> {
             if class_data.is_some() {
                 for counter in &class_data.unwrap().counters {
                     let mut max_uses = 0;
-                    if let Some(stuff) = sparse_map_get(5, &counter.max_uses) {
+                    if let Some(stuff) = sparse_map_get(class.level, &counter.max_uses) {
                         max_uses = parse_expression(stuff, sheet).expect("Parsing didn't go well!");
+                    }
+                    // TODO should this be here?
+                    if !sheet.counters.iter().any(|c| c.name.eq(&counter.name)) {
+                        sheet.counters.push(Counter { name: counter.name.clone(), used: 0 });
                     }
                     vec.push(CounterUI {
                         name: counter.name.clone(),
-                        used: 0,
+                        used: sheet.counters.iter().find(|c| c.name.eq(&counter.name)).unwrap().used,
                         max_uses: max_uses as i32,
                     });
                 }
@@ -153,7 +158,7 @@ pub async fn get_counters() -> Result<Vec<CounterUI>, ()> {
 
 #[tauri::command]
 pub async fn get_health() -> Result<HealthUI, ()> {
-    let state = APP_STATE.read().unwrap();
+    let state = APP_STATE.read();
     let state = state.as_ref().unwrap();
     let Some(sheet) = &state.user_data.sheet else {
         return Err(());
@@ -179,7 +184,7 @@ pub async fn get_available_classes() -> Result<Vec<ClassUi>, ()> {
         }
     }
 
-    let classes_cache = DATA_CACHE.classes.read().unwrap();
+    let classes_cache = DATA_CACHE.classes.read();
     for (name, _data) in classes_cache.iter() {
         vec.push(ClassUi {
             name: name.to_string(),
@@ -205,7 +210,7 @@ pub async fn get_available_races() -> Result<Vec<ClassUi>, ()> {
         }
     }
 
-    let races_cache = DATA_CACHE.races.read().unwrap();
+    let races_cache = DATA_CACHE.races.read();
     for (name, _data) in races_cache.iter() {
         vec.push(ClassUi {
             name: name.to_string(),

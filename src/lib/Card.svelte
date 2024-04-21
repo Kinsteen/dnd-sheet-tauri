@@ -8,7 +8,11 @@
 
   $: {
     if (card && card.style && titleHeight > 0) {
-      card.style.paddingTop = (titleHeight-8) + "px"
+      // 1rem is the top margin
+      // .125rem is border size
+      // (titleHeight - 32)px is the "overflow" of the title
+      // .5rem is the "normal" padding
+      card.style.paddingTop = "calc(1rem + .125rem + " + (titleHeight - 32) + "px + .5rem)"
     }
   }
 </script>
@@ -22,7 +26,9 @@
     </div>
   {/if}
 
+  {#if SLOTS}
   <slot></slot>
+  {/if}
 
   {#if bottomText.length > 0}
     <div class="card-standard-bottom-text">{bottomText}</div>
@@ -37,7 +43,7 @@
   .card-standard-border {
     position: relative;
     border: .125rem solid black;
-    padding: 1rem;
+    padding: .5rem;
     margin-top: 1rem;
     margin-bottom: .25rem;
   }

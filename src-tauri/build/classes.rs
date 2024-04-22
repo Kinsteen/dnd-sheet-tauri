@@ -11,7 +11,7 @@ pub fn generate_classes() {
         name: "cleric".to_string(),
         hit_die: 8,
         armor_proficiencies: str_vec_to_string_vec(vec!["light_armor"]),
-        weapon_proficiencies: str_vec_to_string_vec(vec!["simple_weapon"]),
+        weapon_proficiencies: str_vec_to_string_vec(vec!["simple_weapons"]),
         tool_proficiencies: vec![],
         saving_throws: str_vec_to_string_vec(vec!["wisdom", "charisma"]),
         skill_proficiencies: str_vec_to_string_vec(vec![
@@ -84,7 +84,7 @@ pub fn generate_classes() {
         name: "barbarian".to_string(),
         hit_die: 12,
         armor_proficiencies: str_vec_to_string_vec(vec!["light_armor", "medium_armor", "shields"]),
-        weapon_proficiencies: str_vec_to_string_vec(vec!["simple_weapon", "martial_weapons"]),
+        weapon_proficiencies: str_vec_to_string_vec(vec!["simple_weapons", "martial_weapons"]),
         tool_proficiencies: vec![],
         saving_throws: str_vec_to_string_vec(vec!["strength", "constitution"]),
         skill_proficiencies: str_vec_to_string_vec(vec![
@@ -121,7 +121,7 @@ pub fn generate_classes() {
         hit_die: 8,
         armor_proficiencies: str_vec_to_string_vec(vec!["light_armor"]),
         weapon_proficiencies: str_vec_to_string_vec(vec![
-            "simple_weapon",
+            "simple_weapons",
             "hand_crossbows",
             "longswords",
             "rapiers",
@@ -229,7 +229,7 @@ pub fn generate_classes() {
             "heavy_armor",
             "shields",
         ]),
-        weapon_proficiencies: str_vec_to_string_vec(vec!["simple_weapon", "martial_weapons"]),
+        weapon_proficiencies: str_vec_to_string_vec(vec!["simple_weapons", "martial_weapons"]),
         tool_proficiencies: vec![],
         saving_throws: str_vec_to_string_vec(vec!["strength", "constitution"]),
         skill_proficiencies: str_vec_to_string_vec(vec![
@@ -274,6 +274,315 @@ pub fn generate_classes() {
         custom_property: None,
     };
     write_proto("classes/fighter", &fighter);
+
+    let monk = ClassData {
+        name: "monk".to_string(),
+        hit_die: 8,
+        armor_proficiencies: vec![],
+        weapon_proficiencies: str_vec_to_string_vec(vec!["simple_weapons", "short_swords"]),
+        tool_proficiencies: vec![], // TODO one artisan or one instrument
+        saving_throws: str_vec_to_string_vec(vec!["strength", "dexterity"]),
+        skill_proficiencies: str_vec_to_string_vec(vec![
+            "acrobatics",
+            "athletics",
+            "history",
+            "insight",
+            "religion",
+            "stealth",
+        ]),
+        num_skills_to_choose: 2,
+        spellcasting: None,
+        counters: vec![
+            CounterData {
+                name: "ki_points".to_string(),
+                max_uses: HashMap::from([
+                    (2, "2".to_string()),
+                    (3, "3".to_string()),
+                    (4, "4".to_string()),
+                    (5, "5".to_string()),
+                    (6, "6".to_string()),
+                    (7, "7".to_string()),
+                    (8, "8".to_string()),
+                    (9, "9".to_string()),
+                    (10, "10".to_string()),
+                    (11, "11".to_string()),
+                    (12, "12".to_string()),
+                    (13, "13".to_string()),
+                    (14, "14".to_string()),
+                    (15, "15".to_string()),
+                    (16, "16".to_string()),
+                    (17, "17".to_string()),
+                    (18, "18".to_string()),
+                    (19, "19".to_string()),
+                    (20, "20".to_string()),
+                ]),
+                resets_on_short_rest: true,
+                resets_on_long_rest: true,
+                custom_reset: String::new(),
+            },
+        ],
+        custom_property: None,
+    };
+    write_proto("classes/monk", &monk);
+
+    let paladin = ClassData {
+        name: "paladin".to_string(),
+        hit_die: 10,
+        armor_proficiencies: str_vec_to_string_vec(vec![
+            "light_armor",
+            "medium_armor",
+            "heavy_armor",
+            "shields",
+        ]),
+        weapon_proficiencies: str_vec_to_string_vec(vec!["simple_weapons", "martial_weapons"]),
+        tool_proficiencies: vec![],
+        saving_throws: str_vec_to_string_vec(vec!["wisdom", "charisma"]),
+        skill_proficiencies: str_vec_to_string_vec(vec![
+            "athletics",
+            "insight",
+            "intimidation",
+            "medicine",
+            "persuasion",
+            "religion",
+        ]),
+        num_skills_to_choose: 2,
+        spellcasting: Some(SpellCastingData {
+            casting_ability: "charisma".to_string(),
+            num_cantrips_known: HashMap::new(),
+            spell_slots: HashMap::from([]),
+            num_spell_to_prepare: Some(spell_casting_data::NumSpellToPrepare::Formula("cha_mod + paladin_level / 2".to_string()))
+        }),
+        counters: vec![
+            CounterData {
+                name: "channel_divinity".to_string(),
+                max_uses: HashMap::from([
+                    (3, "1".to_string()),
+                ]),
+                resets_on_short_rest: true,
+                resets_on_long_rest: true,
+                custom_reset: String::new(),
+            },
+            CounterData {
+                name: "cleansing_touch".to_string(),
+                max_uses: HashMap::from([ // TODO formula (cha_mod)
+                ]),
+                resets_on_short_rest: false,
+                resets_on_long_rest: true,
+                custom_reset: String::new(),
+            },
+        ],
+        custom_property: None,
+    };
+    write_proto("classes/paladin", &paladin);
+
+    let ranger = ClassData {
+        name: "ranger".to_string(),
+        hit_die: 10,
+        armor_proficiencies: str_vec_to_string_vec(vec![
+            "light_armor",
+            "medium_armor",
+            "shields",
+        ]),
+        weapon_proficiencies: str_vec_to_string_vec(vec!["simple_weapons", "martial_weapons"]),
+        tool_proficiencies: vec![],
+        saving_throws: str_vec_to_string_vec(vec!["strength", "dexterity"]),
+        skill_proficiencies: str_vec_to_string_vec(vec![
+            "animal_handling",
+            "athletics",
+            "insight",
+            "investigation",
+            "nature",
+            "perception",
+            "stealth",
+            "survival",
+        ]),
+        num_skills_to_choose: 3,
+        spellcasting: Some(SpellCastingData {
+            casting_ability: "wisdom".to_string(),
+            num_cantrips_known: HashMap::new(),
+            spell_slots: HashMap::from([]), // TODO
+            num_spell_to_prepare: None, // TODO a bit more complicated
+        }),
+        counters: vec![],
+        custom_property: Some(class_data::CustomProperty::Ranger(Ranger {
+            // TODO favored enemy, natural explorer, fighting styles
+        })),
+        // TODO archetypes
+    };
+    write_proto("classes/ranger", &ranger);
+
+    let rogue = ClassData {
+        name: "rogue".to_string(),
+        hit_die: 8,
+        armor_proficiencies: str_vec_to_string_vec(vec![
+            "light_armor",
+        ]),
+        weapon_proficiencies: str_vec_to_string_vec(vec![
+            "simple_weapons",
+            "hand_crossbows",
+            "longswords",
+            "rapiers",
+            "shortswords",
+        ]),
+        tool_proficiencies: str_vec_to_string_vec(vec!["thieves_tools"]),
+        saving_throws: str_vec_to_string_vec(vec!["dexterity", "intelligence"]),
+        skill_proficiencies: str_vec_to_string_vec(vec![
+            "acrobatics",
+            "athletics",
+            "deception",
+            "insight",
+            "intimidation",
+            "investigation",
+            "perception",
+            "performance",
+            "persuasion",
+            "sleight_of_hand",
+            "stealth",
+        ]),
+        num_skills_to_choose: 4,
+        spellcasting: None,
+        counters: vec![
+            CounterData {
+                name: "stroke_of_luck".to_string(),
+                max_uses: HashMap::from([
+                    (20, "1".to_string()),
+                ]),
+                resets_on_short_rest: false,
+                resets_on_long_rest: true,
+                custom_reset: String::new(),
+            },
+        ],
+        custom_property: None,
+    };
+    write_proto("classes/rogue", &rogue);
+
+    let sorcerer = ClassData {
+        name: "sorcerer".to_string(),
+        hit_die: 6,
+        armor_proficiencies: vec![],
+        weapon_proficiencies: str_vec_to_string_vec(vec![
+            "daggers",
+            "darts",
+            "slings",
+            "quarterstaffs",
+            "light_crossbows",
+        ]),
+        tool_proficiencies: vec![],
+        saving_throws: str_vec_to_string_vec(vec!["constitution", "charisma"]),
+        skill_proficiencies: str_vec_to_string_vec(vec![
+            "arcana",
+            "deception",
+            "insight",
+            "intimidation",
+            "persuasion",
+            "religion",
+        ]),
+        num_skills_to_choose: 2,
+        spellcasting: Some(SpellCastingData {
+            casting_ability: "charisma".to_string(),
+            num_cantrips_known: HashMap::from([(1, 4), (4, 5), (10, 6)]),
+            spell_slots: HashMap::new(), // TODO
+            num_spell_to_prepare: None, // TODO like ranger
+        }),
+        counters: vec![
+            CounterData {
+                name: "sorcery_points".to_string(),
+                max_uses: HashMap::from([
+                    (2, "2".to_string()),
+                    (3, "3".to_string()),
+                    (4, "4".to_string()),
+                    (5, "5".to_string()),
+                    (6, "6".to_string()),
+                    (7, "7".to_string()),
+                    (8, "8".to_string()),
+                    (9, "9".to_string()),
+                    (10, "10".to_string()),
+                    (11, "11".to_string()),
+                    (12, "12".to_string()),
+                    (13, "13".to_string()),
+                    (14, "14".to_string()),
+                    (15, "15".to_string()),
+                    (16, "16".to_string()),
+                    (17, "17".to_string()),
+                    (18, "18".to_string()),
+                    (19, "19".to_string()),
+                    (20, "20".to_string()),
+                ]),
+                resets_on_short_rest: false,
+                resets_on_long_rest: true,
+                custom_reset: "At 20th level, you gain 4 sorcery points from a short rest".to_string(),
+            },
+        ],
+        custom_property: None,
+    };
+    write_proto("classes/sorcerer", &sorcerer);
+
+    let warlock = ClassData {
+        name: "warlock".to_string(),
+        hit_die: 8,
+        armor_proficiencies: str_vec_to_string_vec(vec![
+            "light_armor",
+        ]),
+        weapon_proficiencies: str_vec_to_string_vec(vec![
+            "simple_weapons",
+        ]),
+        tool_proficiencies: vec![],
+        saving_throws: str_vec_to_string_vec(vec!["wisdom", "charisma"]),
+        skill_proficiencies: str_vec_to_string_vec(vec![
+            "arcana",
+            "deception",
+            "history",
+            "intimidation",
+            "investigation",
+            "nature",
+        ]),
+        num_skills_to_choose: 2,
+        spellcasting: Some(SpellCastingData {
+            casting_ability: "charisma".to_string(),
+            num_cantrips_known: HashMap::from([(1, 2), (4, 3), (10, 4)]),
+            spell_slots: HashMap::new(), // TODO
+            num_spell_to_prepare: None, // TODO like ranger
+        }),
+        counters: vec![
+            // TODO mystic arcanum
+            // TODO eldritch master
+        ],
+        custom_property: None,
+    };
+    write_proto("classes/warlock", &warlock);
+
+    let wizard = ClassData {
+        name: "wizard".to_string(),
+        hit_die: 6,
+        armor_proficiencies: vec![],
+        weapon_proficiencies: str_vec_to_string_vec(vec![
+            "daggers",
+            "darts",
+            "slings",
+            "quarterstaffs",
+            "light_crossbows",
+        ]),
+        tool_proficiencies: vec![],
+        saving_throws: str_vec_to_string_vec(vec!["intelligence", "wisdom"]),
+        skill_proficiencies: str_vec_to_string_vec(vec![
+            "arcana",
+            "history",
+            "insight",
+            "investigation",
+            "medicine",
+            "religion",
+        ]),
+        num_skills_to_choose: 2,
+        spellcasting: Some(SpellCastingData {
+            casting_ability: "intelligence".to_string(),
+            num_cantrips_known: HashMap::from([(1, 3), (4, 4), (10, 5)]),
+            spell_slots: HashMap::new(), // TODO
+            num_spell_to_prepare: None, // TODO spellbook
+        }),
+        counters: vec![],
+        custom_property: None,
+    };
+    write_proto("classes/wizard", &wizard);
 
     println!("cargo::rerun-if-changed=build/classes.rs");
 }

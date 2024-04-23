@@ -1,0 +1,47 @@
+{
+    "lang": "Français",
+    "character_name": "Nom du personnage",
+    "level": "Niveau",
+    "classes": "Classes",
+    "race": "Race",
+    "create_char": "Créer un personnage",
+    "open_data_dir": "Ouvrir dossier des données",
+    "header_title": "Infos basiques",
+    "saving_throws": "Jets de sauvegarde",
+    "health": "Vie",
+    "skills_name": "skills en fr",
+    "abilities": {
+        "strength": "Force",
+        "dexterity": "Dextérité",
+        "constitution": "Constitution",
+        "intelligence": "Intelligence",
+        "wisdom": "Sagesse",
+        "charisma": "Charisme"
+    },
+    "skills": {
+        "acrobatics": "Acrobaties",
+        "animal_handling": "Manipulation des animaux",
+        "arcana": "Arcanes",
+        "athletics": "Athlétisme",
+        "deception": "Tromperie",
+        "history": "Histoire",
+        "insight": "Perspicacité",
+        "intimidation": "Intimidation",
+        "investigation": "Investigation",
+        "medicine": "Médecine",
+        "nature": "Nature",
+        "perception": "Perception",
+        "performance": "Presdigitation",
+        "persuasion": "Persuasion",
+        "religion": "Religion",
+        "sleight_of_hand": "Habilité ?",
+        "stealth": "Discrétion",
+        "survival": "Survie"
+    },
+    "counters": {
+        "light_cleric": {
+            "warding_flare": "Warding flare",
+            "channel_divinity": "Channel divinity"
+        }
+    }
+}

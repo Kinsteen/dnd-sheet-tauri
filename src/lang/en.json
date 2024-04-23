@@ -1,0 +1,47 @@
+{
+    "lang": "English",
+    "character_name": "Character name",
+    "level": "Level",
+    "classes": "Classes",
+    "race": "Race",
+    "create_char": "Create character",
+    "open_data_dir": "Open data directory",
+    "header_title": "Basic infos",
+    "saving_throws": "Saving throws",
+    "health": "Health",
+    "skills_name": "Skills",
+    "abilities": {
+        "strength": "Strength",
+        "dexterity": "Dexterity",
+        "constitution": "Constitution",
+        "intelligence": "Intelligence",
+        "wisdom": "Wisdom",
+        "charisma": "Charisma"
+    },
+    "skills": {
+        "acrobatics": "Acrobatics",
+        "animal_handling": "Animal handling",
+        "arcana": "Arcana",
+        "athletics": "Athletics",
+        "deception": "Deception",
+        "history": "History",
+        "insight": "Insight",
+        "intimidation": "Intimidation",
+        "investigation": "Investigation",
+        "medicine": "Medicine",
+        "nature": "Nature",
+        "perception": "Perception",
+        "performance": "Performance",
+        "persuasion": "Persuasion",
+        "religion": "Religion",
+        "sleight_of_hand": "Sleight of hand",
+        "stealth": "Stealth",
+        "survival": "Survival"
+    },
+    "counters": {
+        "light_cleric": {
+            "warding_flare": "Warding flare",
+            "channel_divinity": "Channel divinity"
+        }
+    }
+}

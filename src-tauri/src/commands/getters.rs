@@ -137,6 +137,7 @@ pub async fn get_counters() -> Result<Vec<CounterUI>, ()> {
                     if max_uses > 0 {
                         vec.push(CounterUI {
                             name: counter.name.clone(),
+                            class: full_class_name.clone(),
                             used: sheet.counters.iter().find(|c| c.name.eq(&counter.name)).unwrap().used,
                             max_uses: max_uses as i32,
                         });

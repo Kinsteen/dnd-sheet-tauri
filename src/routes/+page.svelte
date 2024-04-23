@@ -6,6 +6,7 @@
   import { open } from '@tauri-apps/plugin-shell';
   import { appDataDir } from '@tauri-apps/api/path';
   import { listen } from '@tauri-apps/api/event'
+  import { _, locale, locales} from 'svelte-i18n';
 
   import { invoke } from "@tauri-apps/api/core";
 
@@ -60,6 +61,8 @@
   }).catch((e) => {
     console.error(e)
   })
+
+  console.log($locales)
 </script>
 
 <div>
@@ -68,28 +71,28 @@
 
 <main class="container">
   <div style="margin: 0rem 1rem; flex-basis: 100%">
-    <Card title="Basic Infos">
+    <Card title={$_("header_title")}>
       <div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 10%;">
         <div style="display:flex; flex-direction: column; justify-content: center;align-items: center; border-right: 2px solid black;">
           <div style="display:flex; flex-direction: column">
             <span style="font-weight: bold; font-size: x-large;">{characterName}</span>
-            <span style="font-style: italic; font-size: smaller;">Character name</span>
+            <span style="font-style: italic; font-size: smaller;">{$_("character_name")}</span>
           </div>
         </div>
         <div style="display: grid;">
           <div style="grid-column: 2; grid-row: 1 / span 2; display: flex; flex-direction: column; justify-content: center; align-items: center;">
             <span style="font-weight: bold; font-size: xx-large;">{totalLevel}</span>
-            <span style="font-style: italic; font-size: smaller;">Level</span>
+            <span style="font-style: italic; font-size: smaller;">{$_("level")}</span>
           </div>
           <div style="grid-column: 1; grid-row: 1; display: flex; flex-direction: column">
             {#each classes as cl}
               <span style="font-weight: bold; text-transform: capitalize;">{cl.name.replaceAll("_", " ")} {cl.level}</span>
             {/each}
-            <span style="font-style: italic; font-size: smaller;">Classes</span>
+            <span style="font-style: italic; font-size: smaller;">{$_("classes")}</span>
           </div>
           <div style="grid-column: 1; grid-row: 2; display: flex; flex-direction: column">
             <span style="font-weight: bold; text-transform: capitalize;">{race}</span>
-            <span style="font-style: italic; font-size: smaller;">Race</span>
+            <span style="font-style: italic; font-size: smaller;">{$_("race")}</span>
           </div>
         </div>
       </div>
@@ -99,23 +102,23 @@
   <div class="abilities-grid">
     {#each abilitiesData as ability}
       <Card>
-        <div slot="title">{ability.name.substring(0, 3)}</div>
+        <div slot="title">{$_(`abilities.${ability.name}`).substring(0, 3)}</div>
         <div class="ability">
           <span class="modifier">{ability.modifier}</span>
           <span class="total">{ability.total}</span>
         </div>
-        <div slot="bottomText"><i>{ability.name}</i></div>
+        <div slot="bottomText"><i>{$_(`abilities.${ability.name}`).toLowerCase()}</i></div>
       </Card>
     {/each}
   </div>
   <div class="main-info">
     <div class="main-column">
-      <Card title="Skills">
-        {#each skillsData as skill}
+      <Card title={$_("skills_name")}>
+        {#each skillsData.sort((a, b) => $_(`skills.${a.name}`).localeCompare($_(`skills.${b.name}`))) as skill}
           <Radio
             checked={skill.proficient}
             modifier={skill.modifier}
-            text={skill.name}
+            text={$_(`skills.${skill.name}`)}
           ></Radio>
         {/each}
       </Card>
@@ -129,26 +132,31 @@
             width: 500,
             height: 500,
           });
-        }}>Create character page</button
+        }}>{$_("create_char")}</button
       >
       <button on:click={() => {
         appDataDir().then(path => {
           console.log(path)
           open(path)
         })
-      }}>Open dir</button>
+      }}>{$_("open_data_dir")}</button>
+      {#each $locales as l}
+      <button on:click={() => {
+        $locale = l
+      }}>{l}</button>
+      {/each}
     </div>
     <div class="main-column">
-      <Card title="Saving throws">
+      <Card title={$_('saving_throws')}>
         {#each abilitiesData as ability}
           <Radio
             checked={ability.saving_throw}
             modifier={ability.saving_throw_modifier}
-            text={ability.name}
+            text={$_(`abilities.${ability.name}`)}
           ></Radio>
         {/each}
       </Card>
-      <Card title="Health">
+      <Card title={$_("health")}>
         <div class="health-main">
           <button on:click={() => {
             invoke('change_health', {value: -1}).then(() => {
@@ -166,7 +174,7 @@
         </div>
       </Card>
       {#each counters as counter}
-        <Card title={counter.name.replaceAll("_", " ")}>
+        <Card title={$_(`counters.${counter.class}.${counter.name}`)}>
           <div class="health-main">
           <button on:click={() => {
             invoke('change_counter', {name: counter.name, value: -1}).then(() => {

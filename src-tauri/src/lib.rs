@@ -128,6 +128,7 @@ pub mod ui_data {
     #[derive(Serialize, Deserialize)]
     pub struct CounterUI {
         pub name: String,
+        pub class: String, // Used for i18n
         pub used: i32,
         pub max_uses: i32,
     }

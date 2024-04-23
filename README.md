@@ -58,6 +58,10 @@ This desktop app tries to be a replacement of D&D Beyond.
 				- [ ] uninstall (delete) homebrew
 				- [ ] When loading a sheet, will check for used homebrew. If homebrew is detected but not enabled, will prompt to enable
 	- [ ] User data should be saved properly when modifying their sheet
+- [ ] Support UI translations
+	- [ ] Use string keys, at least English embedded in, probably French as well
+	- [ ] Way to embed translations in Homebrew
+	- [ ] Way to add user translations for new languages, or untranslated keys
 - [ ] (way later, maybe never) gRPC communication
 	- [ ] Players can share their page live to their DM
 	- [ ] Dice rolls between a party?

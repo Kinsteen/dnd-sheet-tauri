@@ -78,7 +78,7 @@ pub fn generate_classes() {
     life_cleric
         .armor_proficiencies
         .push("heavy_armor".to_string());
-    write_proto("classes/life_cleric", &light_cleric);
+    write_proto("classes/life_cleric", &life_cleric);
 
     let barbarian = ClassData {
         name: "barbarian".to_string(),

@@ -2,7 +2,7 @@
     "lang": "English",
     "character_name": "Character name",
     "level": "Level",
-    "classes": "Classes",
+    "classes_name": "Classes",
     "race": "Race",
     "create_char": "Create character",
     "open_data_dir": "Open data directory",
@@ -17,6 +17,12 @@
         "intelligence": "Intelligence",
         "wisdom": "Wisdom",
         "charisma": "Charisma"
+    },
+    "classes": {
+        "light_cleric": "Light Cleric"
+    },
+    "races": {
+        "godwalker_ra": "Godwalker Râ"
     },
     "skills": {
         "acrobatics": "Acrobatics",

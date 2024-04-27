@@ -61,8 +61,6 @@
   }).catch((e) => {
     console.error(e)
   })
-
-  console.log($locales)
 </script>
 
 <div>
@@ -86,12 +84,12 @@
           </div>
           <div style="grid-column: 1; grid-row: 1; display: flex; flex-direction: column">
             {#each classes as cl}
-              <span style="font-weight: bold; text-transform: capitalize;">{cl.name.replaceAll("_", " ")} {cl.level}</span>
+              <span style="font-weight: bold;">{$_(`classes.${cl.name}`)} {cl.level}</span>
             {/each}
-            <span style="font-style: italic; font-size: smaller;">{$_("classes")}</span>
+            <span style="font-style: italic; font-size: smaller;">{$_("classes_name")}</span>
           </div>
           <div style="grid-column: 1; grid-row: 2; display: flex; flex-direction: column">
-            <span style="font-weight: bold; text-transform: capitalize;">{race}</span>
+            <span style="font-weight: bold;">{$_(`races.${race}`)}</span>
             <span style="font-style: italic; font-size: smaller;">{$_("race")}</span>
           </div>
         </div>

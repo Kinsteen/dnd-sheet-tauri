@@ -1,4 +1,4 @@
-use std::fs;
+use std::{collections::HashMap, fs};
 
 use dnd_protos::protos::*;
 
@@ -9,9 +9,9 @@ use crate::{
         health::get_max_health,
         utils::parse_expression,
     }, helpers::sheet_builder::CharacterSheetBuilder, list_skills, load_sheet_from_path, loaders::{
-        homebrew::{load_in_cache, DATA_CACHE},
+        homebrew::{load_in_cache, HomebrewElement, DATA_CACHE},
         r#static::get_full_class_name,
-    }, read_background, read_class, read_race, ui_data::{AbilitiesDataUI, BasicDataClassUI, BasicDataUI, ClassUi, CounterUI, HealthUI, SkillDataUI, SkillsUI}, GeneratedAsset, APP_STATE
+    }, read_background, read_class, read_race, ui_data::{AbilitiesDataUI, BasicDataClassUI, BasicDataUI, ClassUi, CounterUI, HealthUI, HomebrewUi, SkillDataUI, SkillsUI}, GeneratedAsset, APP_STATE
 };
 
 #[tauri::command]
@@ -47,12 +47,18 @@ pub fn get_abilities_data() -> Vec<AbilitiesDataUI> {
             }
         });
 
+        let saving_throw_modifier = if proficient {
+            format_modifier(calculate_modifier(&ability.name, sheet).unwrap() + 2)
+        } else {
+            calculate_modifier_string(&ability.name, sheet).unwrap()
+        };
+
         vec.push(AbilitiesDataUI {
             name: ability.name.clone(),
             modifier,
             total,
             saving_throw: proficient,
-            saving_throw_modifier: "+2".to_string(),
+            saving_throw_modifier,
         })
     }
 
@@ -181,7 +187,7 @@ pub async fn get_available_classes() -> Result<Vec<ClassUi>, ()> {
     }
 
     let classes_cache = DATA_CACHE.classes.read();
-    for (name, _data) in classes_cache.iter() {
+    for name in classes_cache.keys() {
         vec.push(ClassUi {
             name: name.to_string(),
         });
@@ -207,7 +213,7 @@ pub async fn get_available_races() -> Result<Vec<ClassUi>, ()> {
     }
 
     let races_cache = DATA_CACHE.races.read();
-    for (name, _data) in races_cache.iter() {
+    for name in races_cache.keys() {
         vec.push(ClassUi {
             name: name.to_string(),
         });
@@ -233,7 +239,7 @@ pub async fn get_available_backgrounds() -> Result<Vec<ClassUi>, ()> {
     }
 
     let backgrounds_cache = DATA_CACHE.backgrounds.read();
-    for (name, _data) in backgrounds_cache.iter() {
+    for name in backgrounds_cache.keys() {
         vec.push(ClassUi {
             name: name.to_string(),
         });
@@ -388,4 +394,71 @@ pub async fn get_sheets() -> Result<Vec<BasicDataUI>, String> {
     }
 
     Ok(vec)
+}
+
+#[tauri::command]
+pub async fn get_homebrews() -> Result<HashMap<String, HomebrewUi>, String> {
+    let mut result = HashMap::new();
+
+    let class_cache = DATA_CACHE.classes.read();
+    for HomebrewElement {data, source} in class_cache.values() {
+        if !result.contains_key(source) {
+            result.insert(source.clone(), HomebrewUi {
+                classes: vec![],
+                races: vec![],
+                skills: vec![],
+                backgrounds: vec![],
+            });
+        }
+
+        result.get_mut(source).unwrap().classes.push(data.name.clone());
+    }
+    drop(class_cache);
+
+    let race_cache = DATA_CACHE.races.read();
+    for HomebrewElement {data, source} in race_cache.values() {
+        if !result.contains_key(source) {
+            result.insert(source.clone(), HomebrewUi {
+                classes: vec![],
+                races: vec![],
+                skills: vec![],
+                backgrounds: vec![],
+            });
+        }
+
+        result.get_mut(source).unwrap().races.push(data.name.clone());
+    }
+    drop(race_cache);
+
+    let skills_cache = DATA_CACHE.skills.read();
+    for HomebrewElement {data, source} in skills_cache.values() {
+        if !result.contains_key(source) {
+            result.insert(source.clone(), HomebrewUi {
+                classes: vec![],
+                races: vec![],
+                skills: vec![],
+                backgrounds: vec![],
+            });
+        }
+
+        result.get_mut(source).unwrap().skills.push(data.name.clone());
+    }
+    drop(skills_cache);
+
+    let backgrounds_cache = DATA_CACHE.backgrounds.read();
+    for HomebrewElement {data, source} in backgrounds_cache.values() {
+        if !result.contains_key(source) {
+            result.insert(source.clone(), HomebrewUi {
+                classes: vec![],
+                races: vec![],
+                skills: vec![],
+                backgrounds: vec![],
+            });
+        }
+
+        result.get_mut(source).unwrap().backgrounds.push(data.name.clone());
+    }
+    drop(backgrounds_cache);
+
+    Ok(result)
 }

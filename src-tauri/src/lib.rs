@@ -164,6 +164,14 @@ pub mod ui_data {
         pub race: String,
         pub total_level: i32,
     }
+
+    #[derive(Serialize, Deserialize)]
+    pub struct HomebrewUi {
+        pub classes: Vec<String>,
+        pub races: Vec<String>,
+        pub skills: Vec<String>,
+        pub backgrounds: Vec<String>,
+    }
 }
 
 #[tauri::command]
@@ -174,7 +182,7 @@ async fn create_sheet(
     race: String,
     health_system_mean: bool,
     abilities: HashMap<String, i32>,
-    skills: Vec<String>,
+    skills: HashMap<String, Vec<String>>,
 ) -> Result<(), String> {
     // read_class!([&class, class_data] => {
     //     if class_data.is_none() {
@@ -215,8 +223,10 @@ async fn create_sheet(
         builder = builder.ability(ability, score.to_owned());
     }
 
-    for skill in skills {
-        builder = builder.skill(skill);
+    for (_source, skills) in skills {
+        for skill in skills {
+            builder = builder.skill(skill);
+        }
     }
 
     builder.can_build()?;
@@ -374,6 +384,7 @@ pub fn run() {
             get_basic_data,
             get_sheets,
             change_sheet,
+            get_homebrews,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

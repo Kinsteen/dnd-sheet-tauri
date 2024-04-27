@@ -51,8 +51,14 @@
     sheets = await invoke('get_sheets')
     console.log(sheets)
   }
-  // loadHomebrew() // From Rust
-  loadSheets() // From Rust
+
+  async function loadHomebrews() {
+    homebrews = await invoke('get_homebrews')
+    console.log(homebrews["palg"])
+  }
+
+  loadHomebrews()
+  loadSheets()
 </script>
 
 <div>
@@ -62,31 +68,31 @@
   <h1>Settings</h1>
   <h2>Homebrew content</h2>
   <div class="homebrew-holder">
-    {#each homebrews as homebrew}
+    {#each Object.keys(homebrews) as key}
     <div class="homebrew-content">
-      <h3>{homebrew.name}</h3>
+      <h3>{key}</h3>
       <b>Classes:</b>
       <ul>
-        {#each homebrew.classes as cl}
-          <li>{cl.name}</li>
+        {#each homebrews[key].classes as cl}
+          <li>{cl}</li>
         {/each}
       </ul>
       <b>Races:</b>
       <ul>
-        {#each homebrew.races as race}
-          <li>{race.name}</li>
+        {#each homebrews[key].races as race}
+          <li>{race}</li>
         {/each}
       </ul>
       <b>Skills:</b>
       <ul>
-        {#each homebrew.skills as skill}
-          <li>{skill.name}</li>
+        {#each homebrews[key].skills as skill}
+          <li>{skill}</li>
         {/each}
       </ul>
       <b>Backgrounds:</b>
       <ul>
-        {#each homebrew.backgrounds as background}
-          <li>{background.name}</li>
+        {#each homebrews[key].backgrounds as background}
+          <li>{background}</li>
         {/each}
       </ul>
     </div>

@@ -57,9 +57,14 @@ impl CharacterSheetBuilder {
         self
     }
 
+    // TODO check if source and skill works
     pub fn skill(mut self, skill: impl Into<String>) -> Self {
         self.skills.push(skill.into());
         self
+    }
+
+    pub fn skill_source(mut self, source: impl Into<String>, skill: impl Into<String>) -> Self{
+        todo!()
     }
 
     pub fn custom_language(mut self, language: impl Into<String>) -> Self {
@@ -116,14 +121,35 @@ impl CharacterSheetBuilder {
 
     pub fn build(self) -> Result<CharacterSheet, String> {
         self.can_build()?;
+        
+        let mut abilities_sorted = vec![];
+
+        // If we have every abilities, we should sort them in the "normal" order
+        if self.abilities.len() == 6 {
+            let sorted_names = [
+                "strength",
+                "dexterity",
+                "constitution",
+                "intelligence",
+                "wisdom",
+                "charisma",
+            ];
+
+            for name in sorted_names {
+                let a = self.abilities.iter().find(|a| a.name.eq(name)).unwrap();
+                abilities_sorted.push(a.to_owned());
+            }
+        } else {
+            abilities_sorted = self.abilities;
+        }
 
         let mut sheet = CharacterSheet {
             character_name: self.character_name.unwrap(),
             classes: self.classes,
             race: self.race,
             health: 0,
-            temp_health: None, // TODO
-            abilities: self.abilities,
+            temp_health: None, // TODO?
+            abilities: abilities_sorted,
             custom_ability_increases: self.custom_ability_increases,
             skills: self.skills,
             custom_languages: self.custom_languages,

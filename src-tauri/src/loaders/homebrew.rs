@@ -5,12 +5,18 @@ use once_cell::sync::Lazy;
 use parking_lot::RwLock;
 use prost::Message;
 
+#[derive(Eq, Hash, PartialEq, Debug)]
+pub struct HomebrewElement<T> {
+    pub data: T,
+    pub source: String, // Name/ID of the homebrew where the element comes from
+}
+
 // Field (name|type) should match field (name|type) in Homebrew struct
 pub struct Caches {
-    pub classes: RwLock<HashMap<String, ClassData>>,
-    pub races: RwLock<HashMap<String, RaceData>>,
-    pub skills: RwLock<HashMap<String, SkillData>>,
-    pub backgrounds: RwLock<HashMap<String, BackgroundData>>,
+    pub classes: RwLock<HashMap<String, HomebrewElement<ClassData>>>,
+    pub races: RwLock<HashMap<String, HomebrewElement<RaceData>>>,
+    pub skills: RwLock<HashMap<String, HomebrewElement<SkillData>>>,
+    pub backgrounds: RwLock<HashMap<String, HomebrewElement<BackgroundData>>>,
 }
 
 pub static DATA_CACHE: Lazy<Caches> = Lazy::new(|| Caches {
@@ -33,30 +39,57 @@ pub fn load_in_cache() {
 
     for path in paths {
         let real_path = path.unwrap().path();
-        let data = fs::read(real_path).unwrap();
-        let homebrew = dnd_protos::protos::Homebrew::decode(data.as_ref()).unwrap();
+
+        let data = fs::read(&real_path).unwrap();
+        let extension = real_path.extension();
+        let homebrew = if extension.is_some() && extension.unwrap().eq("json") {
+            let result = serde_json::from_slice(&data);
+
+            if result.is_err() {
+                eprintln!("Error loading homebrew {real_path:?}: {:?}", result.err().unwrap());
+                continue;
+            }
+
+            result.unwrap()
+        } else {
+            dnd_protos::protos::Homebrew::decode(data.as_ref()).unwrap()
+        };
+
+        let homebrew_name = homebrew.name.clone();
 
         let mut cache = DATA_CACHE.classes.write();
         for class in homebrew.classes {
-            cache.insert(class.name.clone(), class);
+            cache.insert(class.name.clone(), HomebrewElement {
+                data: class,
+                source: homebrew_name.clone()
+            });
         }
         drop(cache);
 
         let mut cache = DATA_CACHE.races.write();
         for race in homebrew.races {
-            cache.insert(race.name.clone(), race);
+            cache.insert(race.name.clone(), HomebrewElement {
+                data: race,
+                source: homebrew_name.clone()
+            });
         }
         drop(cache);
 
         let mut cache = DATA_CACHE.skills.write();
         for skill in homebrew.skills {
-            cache.insert(skill.name.clone(), skill);
+            cache.insert(skill.name.clone(), HomebrewElement {
+                data: skill,
+                source: homebrew_name.clone()
+            });
         }
         drop(cache);
 
         let mut cache = DATA_CACHE.backgrounds.write();
         for background in homebrew.backgrounds {
-            cache.insert(background.name.clone(), background);
+            cache.insert(background.name.clone(), HomebrewElement {
+                data: background,
+                source: homebrew_name.clone()
+            });
         }
         drop(cache);
     }
@@ -95,7 +128,11 @@ macro_rules! read_homebrew {
 
         // Cache is always dropped before
         let cache = $crate::loaders::homebrew::DATA_CACHE.$field.read();
-        let $classdata = cache.get($name);
+        let $classdata = if cache.get($name).is_some() {
+            Some(&cache.get($name).unwrap().data)
+        } else {
+            None
+        };
         $($body)*
         drop(cache);
     };

@@ -2,7 +2,7 @@
     "lang": "Français",
     "character_name": "Nom du personnage",
     "level": "Niveau",
-    "classes": "Classes",
+    "classes_name": "Classes",
     "race": "Race",
     "create_char": "Créer un personnage",
     "open_data_dir": "Ouvrir dossier des données",

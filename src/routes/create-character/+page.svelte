@@ -176,20 +176,38 @@
     </div>
   {/if}
   <button on:click={() => {
-    console.log(tempChecked)
+    let checked = {}
+
+    let mapChecked = (key) => {
+      Object.keys(tempChecked[key]).forEach(skill => {
+        let val = tempChecked[key][skill]
+  
+        if (!checked[key]) {
+          checked[key] = []
+        }
+
+        if (val) {
+          checked[key].push(skill)
+        }
+      })
+    }
+
+    mapChecked('class')
+    mapChecked('race')
+    mapChecked('background')
     // console.log(Object.fromEntries(Object.entries(skillsChecked).filter(([k,v]) => console.log(v))))
-    // invoke("create_sheet", {
-    //   characterName: characterName,
-    //   class: className,
-    //   race: raceName,
-    //   healthSystemMean: healthMean == "mean",
-    //   abilities: abilitiesValues,
-    //   skills: ["test1", "test2"]
-    // }).then(() => {
-    //   errorMessage.set('')
-    // }).catch(e => {
-    //   errorMessage.set(e)
-    // })
+    invoke("create_sheet", {
+      characterName: characterName,
+      class: className,
+      race: raceName,
+      healthSystemMean: healthMean == "mean",
+      abilities: abilitiesValues,
+      skills: checked,
+    }).then(() => {
+      errorMessage.set('')
+    }).catch(e => {
+      errorMessage.set(e)
+    })
   }}>Create & load character</button>
 </div>
 

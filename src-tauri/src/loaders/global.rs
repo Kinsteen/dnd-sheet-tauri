@@ -85,8 +85,8 @@ macro_rules! list_skills {
         }
 
         let cache = $crate::loaders::homebrew::DATA_CACHE.skills.read();
-        for (_name, data) in cache.iter() {
-            skills.push(data.clone());
+        for data in cache.values() {
+            skills.push(data.data.clone());
         }
         drop(cache);
 

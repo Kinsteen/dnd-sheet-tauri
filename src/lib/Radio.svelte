@@ -11,8 +11,10 @@ export let text = "";
       <div class="radio-inner"></div>
     {/if}
   </div>
-  <div>{modifier}</div>
-  <div>{text}</div>
+  <div class="radio-text">
+    <div>{modifier}</div>
+    <div>{text}</div>
+  </div>
 </div>
 
 <style>
@@ -21,6 +23,17 @@ export let text = "";
     flex-direction: row;
     gap: .25rem;
     margin-top: .25rem;
+    align-items: center;
+  }
+
+  .radio-text {
+    display: flex;
+    gap: .25rem;
+    flex-wrap: wrap;
+  }
+
+  .radio-display:has(.radio-outer + .radio-inner) + .radio-text {
+    font-weight: bold;
   }
 
   .radio-display {

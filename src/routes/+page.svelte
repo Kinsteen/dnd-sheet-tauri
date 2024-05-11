@@ -9,6 +9,7 @@
   import { _, locale, locales} from 'svelte-i18n';
 
   import { invoke } from "@tauri-apps/api/core";
+  import { onMount } from "svelte";
 
   let abilitiesData = [];
   let skillsData = [];
@@ -54,13 +55,17 @@
 
   loadSheet()
 
-  listen('reload-sheet', (event) => {
-    console.log("Reloading sheet because backend said so")
-    loadSheet()
-  }).then(() => {
-  }).catch((e) => {
-    console.error(e)
+  onMount(() => {
+    // TODO test after onMount
+    listen('reload-sheet', (event) => {
+      console.log("Reloading sheet because backend said so")
+      loadSheet()
+    }).then(() => {
+    }).catch((e) => {
+      console.error(e)
+    })
   })
+
 </script>
 
 <div>
@@ -68,7 +73,7 @@
 </div>
 
 <main class="container">
-  <div style="margin: 0rem 1rem; flex-basis: 100%">
+  <div class="header">
     <Card title={$_("header_title")}>
       <div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 10%;">
         <div style="display:flex; flex-direction: column; justify-content: center;align-items: center; border-right: 2px solid black;">
@@ -111,16 +116,18 @@
   </div>
   <div class="main-info">
     <div class="main-column">
-      <Card title={$_("skills_name")}>
-        {#each skillsData.sort((a, b) => $_(`skills.${a.name}`).localeCompare($_(`skills.${b.name}`))) as skill}
-          <Radio
-            checked={skill.proficient}
-            modifier={skill.modifier}
-            text={$_(`skills.${skill.name}`)}
-          ></Radio>
-        {/each}
-      </Card>
-      <button
+      <div class="skills">
+        <Card title={$_("skills_name")}>
+          {#each skillsData.sort((a, b) => $_(`skills.${a.name}`).localeCompare($_(`skills.${b.name}`))) as skill}
+            <Radio
+              checked={skill.proficient}
+              modifier={skill.modifier}
+              text={$_(`skills.${skill.name}`)}
+            ></Radio>
+          {/each}
+        </Card>
+      </div>
+      <!-- <button
         on:click={() => {
           const window = new Window("label");
           const w = new Webview(window, "theUniqueLabel", {
@@ -142,7 +149,7 @@
       <button on:click={() => {
         $locale = l
       }}>{l}</button>
-      {/each}
+      {/each} -->
     </div>
     <div class="main-column">
       <Card title={$_('saving_throws')}>
@@ -172,7 +179,7 @@
         </div>
       </Card>
       {#each counters as counter}
-        <Card title={$_(`counters.${counter.class}.${counter.name}`)}>
+        <Card title={$_(`counters.${counter.name}`)}>
           <div class="health-main">
           <button on:click={() => {
             invoke('change_counter', {name: counter.name, value: -1}).then(() => {
@@ -190,21 +197,27 @@
       {/each}
     </div>
   </div>
-  <div class="footer"></div>
+  <div class="footer">
+    <button>Main info</button>
+    <button>Spells</button>
+    <button>Inventory</button>
+  </div>
 </main>
 
 <style>
   .abilities-grid {
+    background-color: #fff;
+    z-index: 1;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     width: 100%;
     gap: 1rem;
-    margin: 1rem;
+    padding: 1rem;
   }
 
   .container {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr;
     height: 100%;
   }
 
@@ -217,73 +230,39 @@
 
   .ability > .modifier {
     font-size: xx-large;
+    line-height: 1;
   }
 
   .ability > .total {
     font-size: medium;
   }
 
-  @media (width >= 650px) {
-    .abilities-grid {
-      align-self: stretch;
-      grid-template-columns: 1fr;
-      width: 8rem;
-    }
-
-    .main-info {
-      /* width: fill-available;
-      width: -webkit-fill-available; */
-    }
-  }
-
-  /* @container (height <= 600px) {
-    .ability {
-      flex-direction: row;
-    }
-
-    .ability > .modifier {
-      font-size: x-large;
-      line-height: 0;
-    }
-
-    .ability > .total {
-      font-size: small;
-    }
-  } */
-
   .footer {
-    display: block;
-    position: fixed;
-    left: 0;
+    position: sticky;
     bottom: 0;
     width: 100%;
-    height: 6rem;
+    height: 4rem;
     background-color: #ccc;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+    z-index: 1;
   }
 
   .main-info {
     flex-grow: 1;
-    padding-bottom: 7rem;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     margin: 1rem;
+    /* max-width: 54rem; */
   }
 
   .main-column {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-  }
-
-  @media (width >= 650px) {
-    .footer {
-      display: none;
-    }
-
-    .main-info {
-      padding-bottom: 0;
-    }
   }
 
   .health-main {
@@ -308,5 +287,31 @@
 
   .health-main > div {
     font-size: x-large;
+  }
+
+  .header {
+    margin: 0rem 1rem;
+  }
+
+  @media (width > 800px) {
+    .container {
+      grid-template-columns: 10rem 1fr;
+    }
+
+    .header {
+      grid-column: 1 / span 2;
+    }
+
+    .footer {
+      grid-column: 1 / span 2;
+    }
+
+    .main-info {
+      max-width: 60rem;
+    }
+
+    .abilities-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

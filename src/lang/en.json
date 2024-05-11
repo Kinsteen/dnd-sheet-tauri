@@ -19,10 +19,10 @@
         "charisma": "Charisma"
     },
     "classes": {
-        "light_cleric": "Light Cleric"
+        "life_cleric": "Life Cleric"
     },
     "races": {
-        "godwalker_ra": "Godwalker Râ"
+        "tiefling": "Tiefling"
     },
     "skills": {
         "acrobatics": "Acrobatics",
@@ -45,9 +45,7 @@
         "survival": "Survival"
     },
     "counters": {
-        "light_cleric": {
-            "warding_flare": "Warding flare",
-            "channel_divinity": "Channel divinity"
-        }
+        "warding_flare": "Warding flare",
+        "channel_divinity": "Channel divinity"
     }
 }

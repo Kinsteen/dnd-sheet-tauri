@@ -3,8 +3,8 @@
   "version": "0.0.0-alpha1",
   "identifier": "fr.kinsteen.dndsheetapp",
   "build": {
-    "beforeDevCommand": "yarn dev",
-    "beforeBuildCommand": "yarn build",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
     "devUrl": "http://localhost:1420",
     "frontendDist": "../build"
   },

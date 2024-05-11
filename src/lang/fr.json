@@ -9,7 +9,7 @@
     "header_title": "Infos basiques",
     "saving_throws": "Jets de sauvegarde",
     "health": "Vie",
-    "skills_name": "skills en fr",
+    "skills_name": "Compétences",
     "abilities": {
         "strength": "Force",
         "dexterity": "Dextérité",
@@ -17,6 +17,13 @@
         "intelligence": "Intelligence",
         "wisdom": "Sagesse",
         "charisma": "Charisme"
+    },
+    "classes": {
+        "life_cleric": "Life Cleric"
+    },
+    "races": {
+        "godwalker_ra": "Godwalker Râ",
+        "tiefling": "Tiefling"
     },
     "skills": {
         "acrobatics": "Acrobaties",
@@ -34,14 +41,12 @@
         "performance": "Presdigitation",
         "persuasion": "Persuasion",
         "religion": "Religion",
-        "sleight_of_hand": "Habilité ?",
+        "sleight_of_hand": "Tour de passe-passe",
         "stealth": "Discrétion",
         "survival": "Survie"
     },
     "counters": {
-        "light_cleric": {
-            "warding_flare": "Warding flare",
-            "channel_divinity": "Channel divinity"
-        }
+        "warding_flare": "Warding flare",
+        "channel_divinity": "Channel divinity"
     }
 }

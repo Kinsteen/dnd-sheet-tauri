@@ -12,7 +12,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-build
+/build
 dist-ssr
 *.local
 

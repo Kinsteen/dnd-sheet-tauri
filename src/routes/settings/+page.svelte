@@ -1,43 +1,27 @@
 <script>
-  import { invoke } from "@tauri-apps/api/core";
+  import Card from "$lib/Card.svelte";
+import { invoke } from "@tauri-apps/api/core";
+  import { _, locale, locales} from 'svelte-i18n';
 
 
-  let homebrews = [
-    {
-      name: "Prédestinés à la Gloire",
+  let homebrews = {
+    palg: {
       classes: [
-        {name: "Cleric Light"},
-        {name: "Random"},
-      ],
-      races: [
-        {name: "Wasdf"},
-        {name: "Azevdf"},
-      ],
-      skills: [
-        {name: "Crafting"},
-      ],
-      backgrounds: [
-        {name: "Test bg"},
-      ]
-    },
-    {
-      name: "Prédestinés à la Gloire",
-      classes: [
-        {name: "Cleric Light"},
-        {name: "Random"},
-      ],
-      races: [
-        {name: "Wasdf"},
-        {name: "Azevdf"},
-      ],
-      skills: [
-        {name: "Crafting"},
-      ],
-      backgrounds: [
-        {name: "Test bg"},
-      ]
-    },
-  ]
+      {name: "Cleric Light"},
+      {name: "Random"},
+    ],
+    races: [
+      {name: "Wasdf"},
+      {name: "Azevdf"},
+    ],
+    skills: [
+      {name: "Crafting"},
+    ],
+    backgrounds: [
+      {name: "Test bg"},
+    ]
+    }
+  }
 
   let sheets = [
     {
@@ -49,12 +33,11 @@
 
   async function loadSheets() {
     sheets = await invoke('get_sheets')
-    console.log(sheets)
   }
 
   async function loadHomebrews() {
     homebrews = await invoke('get_homebrews')
-    console.log(homebrews["palg"])
+    console.log(homebrews)
   }
 
   loadHomebrews()
@@ -62,11 +45,14 @@
 </script>
 
 <div>
-  <button on:click={() => {
-    window.history.back();
-  }}>Back</button>
-  <h1>Settings</h1>
-  <h2>Homebrew content</h2>
+  <div class="header">
+    <button on:click={() => {
+      window.history.back();
+    }}>Back</button>
+    <h1>Settings</h1>
+  </div>
+
+  <!-- <h2>Homebrew content</h2>
   <div class="homebrew-holder">
     {#each Object.keys(homebrews) as key}
     <div class="homebrew-content">
@@ -97,19 +83,91 @@
       </ul>
     </div>
   {/each}
-  </div>
-  <h2>Character sheets</h2>
-  <ul>
-    {#each sheets as sheet}
-      <li>{sheet.character_name} ({sheet.classes[0].name}, {sheet.total_level}) <button on:click={() => {
-        invoke('change_sheet', {name: sheet.character_name})
-      }}>Load</button></li>
-    {/each}
-  </ul>
+  </div> -->
+  <h2>{$_("settings.characters")}</h2>
+  {#each sheets as sheet}
+    <div style="padding: 1rem">
+      <Card title={sheet.character_name}>
+        <div class="character-card">
+          <span>{$_(`classes.${sheet.classes[0].name}`)}, {sheet.total_level}</span>
+          <span>HP: 12/18</span>
+          <div class="button-row">
+            <div>
+              <button on:click={() => {
+                invoke('change_sheet', {name: sheet.character_name})
+              }}>Load</button>
+              <button>Edit</button>
+            </div>
+            <button>Delete</button>
+          </div>
+        </div>
+      </Card>
+    </div>
+  {/each}
+
+  <h2>{$_("settings.homebrews")}</h2>
+  {#each Object.keys(homebrews) as key}
+    <Card title={$_(`homebrew.${key}`)}>
+      <div class="homebrew-card">
+        <div>
+          <b>Classes:</b><!-- TODO translation -->
+          <ul>
+            {#each homebrews[key].classes as cl}
+              <li>{cl}</li>
+            {/each}
+          </ul>
+          <b>Races:</b>
+          <ul>
+            {#each homebrews[key].races as race}
+              <li>{race}</li>
+            {/each}
+          </ul>
+          <b>Skills:</b>
+          <ul>
+            {#each homebrews[key].skills as skill}
+              <li>{skill}</li>
+            {/each}
+          </ul>
+          <b>Backgrounds:</b>
+          <ul>
+            {#each homebrews[key].backgrounds as background}
+              <li>{background}</li>
+            {/each}
+          </ul>
+        </div>
+        <div>
+          Used by:
+          <ul>
+            <li>Test 1</li><!-- TODO -->
+            <li>Test 2</li>
+          </ul>
+        </div>
+      </div>
+    </Card>
+  {/each}
 </div>
 
 <style>
-  .homebrew-holder {
+  h2 {
+    margin: 0rem 1rem;
+  }
+
+  .header {
+    display: flex;
+    gap: 1em;
+  }
+
+  .character-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .button-row {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .homebrew-card {
     display: flex;
   }
 

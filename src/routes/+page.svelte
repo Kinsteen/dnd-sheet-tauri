@@ -7,6 +7,8 @@
   import { appDataDir } from '@tauri-apps/api/path';
   import { listen } from '@tauri-apps/api/event'
   import { _, locale, locales} from 'svelte-i18n';
+    import Icon from 'mdi-svelte';
+    import { mdiCog, mdiTranslate } from "@mdi/js";
 
   import { invoke } from "@tauri-apps/api/core";
   import { onMount } from "svelte";
@@ -68,8 +70,19 @@
 
 </script>
 
-<div>
-  <a href="/settings">Settings</a>
+<div style="display: flex; align-items: center; justify-content: space-between;">
+  <h1 style="text-transform: uppercase;">DnD Tracker</h1>
+  <div style="display: flex; align-items: center; gap: .25rem">
+    <button popovertarget="translations-popover"><Icon path={mdiTranslate} color="black" /></button>
+    <div popover="auto" id="translations-popover" style="position:absolute; margin-right: .25rem; margin-left: auto; top: 3rem">
+      {#each $locales as l}
+      <button on:click={() => {
+        $locale = l
+      }}>{l}</button>
+      {/each}
+    </div>
+    <a href="/settings"><Icon path={mdiCog} color="black" /></a>
+  </div>
 </div>
 
 <main class="container">
@@ -138,18 +151,14 @@
             height: 500,
           });
         }}>{$_("create_char")}</button
-      >
+      > -->
+      <a href="/create-character">{$_("create_char")}</a>
       <button on:click={() => {
         appDataDir().then(path => {
           console.log(path)
           open(path)
         })
       }}>{$_("open_data_dir")}</button>
-      {#each $locales as l}
-      <button on:click={() => {
-        $locale = l
-      }}>{l}</button>
-      {/each} -->
     </div>
     <div class="main-column">
       <Card title={$_('saving_throws')}>

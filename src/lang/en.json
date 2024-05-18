@@ -46,6 +46,10 @@
     },
     "counters": {
         "warding_flare": "Warding flare",
-        "channel_divinity": "Channel divinity"
+        "channel_divinity": "Channel divinity",
+        "harness_divine_power": "Harness divine power"
+    },
+    "settings": {
+        "characters": "Characters"
     }
 }

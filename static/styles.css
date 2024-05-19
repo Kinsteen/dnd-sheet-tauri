@@ -23,8 +23,23 @@
   font-weight: light;
 }
 
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: url(JetBrainsMono[wght].ttf);
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: url(JetBrainsMono-Italic[wght].ttf);
+  font-style: italic;
+}
+
 * {
-  font-family: "Courier New", Courier, monospace;
+  font-family: 'JetBrains Mono';
 }
 
 /*

@@ -174,7 +174,7 @@ pub async fn get_health() -> Result<HealthUI, ()> {
 }
 
 #[tauri::command]
-pub async fn get_available_classes() -> Result<Vec<ClassUi>, ()> {
+pub async fn get_available_classes(homebrews: Vec<String>) -> Result<Vec<ClassUi>, ()> {
     load_in_cache(); // Load homebrews
     let mut vec = vec![];
 
@@ -187,10 +187,12 @@ pub async fn get_available_classes() -> Result<Vec<ClassUi>, ()> {
     }
 
     let classes_cache = DATA_CACHE.classes.read();
-    for name in classes_cache.keys() {
-        vec.push(ClassUi {
-            name: name.to_string(),
-        });
+    for HomebrewElement {data, source} in classes_cache.values() {
+        if homebrews.contains(source) {
+            vec.push(ClassUi {
+                name: data.name.clone(),
+            });
+        }
     }
     drop(classes_cache);
 
@@ -200,7 +202,7 @@ pub async fn get_available_classes() -> Result<Vec<ClassUi>, ()> {
 }
 
 #[tauri::command]
-pub async fn get_available_races() -> Result<Vec<ClassUi>, ()> {
+pub async fn get_available_races(homebrews: Vec<String>) -> Result<Vec<ClassUi>, ()> {
     load_in_cache(); // Load homebrews
     let mut vec = vec![];
 
@@ -213,10 +215,12 @@ pub async fn get_available_races() -> Result<Vec<ClassUi>, ()> {
     }
 
     let races_cache = DATA_CACHE.races.read();
-    for name in races_cache.keys() {
-        vec.push(ClassUi {
-            name: name.to_string(),
-        });
+    for HomebrewElement { data, source } in races_cache.values() {
+        if homebrews.contains(source) {
+            vec.push(ClassUi {
+                name: data.name.clone(),
+            });
+        }
     }
     drop(races_cache);
 
@@ -226,7 +230,7 @@ pub async fn get_available_races() -> Result<Vec<ClassUi>, ()> {
 }
 
 #[tauri::command]
-pub async fn get_available_backgrounds() -> Result<Vec<ClassUi>, ()> {
+pub async fn get_available_backgrounds(homebrews: Vec<String>) -> Result<Vec<ClassUi>, ()> {
     load_in_cache(); // Load homebrews
     let mut vec = vec![];
 
@@ -239,10 +243,12 @@ pub async fn get_available_backgrounds() -> Result<Vec<ClassUi>, ()> {
     }
 
     let backgrounds_cache = DATA_CACHE.backgrounds.read();
-    for name in backgrounds_cache.keys() {
-        vec.push(ClassUi {
-            name: name.to_string(),
-        });
+    for HomebrewElement { data, source } in backgrounds_cache.values() {
+        if homebrews.contains(source) {
+            vec.push(ClassUi {
+                name: data.name.clone(),
+            });
+        }
     }
     drop(backgrounds_cache);
 

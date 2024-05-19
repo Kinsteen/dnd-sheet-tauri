@@ -86,7 +86,7 @@ impl CharacterSheetBuilder {
     }
 
     pub fn can_build(&self) -> Result<(), String> {
-        if self.character_name.is_none() {
+        if self.character_name.is_none() || self.character_name.as_ref().unwrap().is_empty() {
             return Err("Character name can't be empty.".to_string());
         };
 

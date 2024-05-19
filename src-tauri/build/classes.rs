@@ -130,7 +130,7 @@ pub fn generate_classes() {
         tool_proficiencies: vec![], // TODO three musical instruments
         saving_throws: str_vec_to_string_vec(vec!["dexterity", "charisma"]),
         skill_proficiencies: str_vec_to_string_vec(vec!["any", "any", "any"]), // TODO any three
-        num_skills_to_choose: 0,
+        num_skills_to_choose: 3,
         spellcasting: Some(SpellCastingData {
             casting_ability: "charisma".to_string(),
             num_cantrips_known: HashMap::from([(1, 2), (4, 3), (10, 4)]),

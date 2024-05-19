@@ -63,7 +63,7 @@ pub fn generate_races() {
         size: "medium".to_string(),
         languages_known: str_vec_to_string_vec(vec!["common", "elvish"]),
         skill_proficiencies: str_vec_to_string_vec(vec!["perception"]),
-        num_skills_to_choose: 0,
+        num_skills_to_choose: 1,
         tool_proficiencies: vec![],
         num_tools_to_choose: 0,
         weapon_proficiencies: vec![],

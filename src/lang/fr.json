@@ -30,7 +30,7 @@
         "animal_handling": "Manipulation des animaux",
         "arcana": "Arcanes",
         "athletics": "Athlétisme",
-        "deception": "Tromperie",
+        "deception": "Supercherie",
         "history": "Histoire",
         "insight": "Perspicacité",
         "intimidation": "Intimidation",
@@ -38,10 +38,10 @@
         "medicine": "Médecine",
         "nature": "Nature",
         "perception": "Perception",
-        "performance": "Presdigitation",
+        "performance": "Représentation",
         "persuasion": "Persuasion",
         "religion": "Religion",
-        "sleight_of_hand": "Tour de passe-passe",
+        "sleight_of_hand": "Escamotage",
         "stealth": "Discrétion",
         "survival": "Survie"
     },
@@ -53,5 +53,8 @@
     "settings": {
         "characters": "Personnages",
         "homebrews": "Homebrews"
+    },
+    "create": {
+        "title": "Création de personnage"
     }
 }

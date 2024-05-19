@@ -1,6 +1,6 @@
 {
   "productName": "dnd-sheet-tauri",
-  "version": "0.0.0-alpha1",
+  "version": "0.0.0-alpha2",
   "identifier": "fr.kinsteen.dndsheetapp",
   "build": {
     "beforeDevCommand": "npm run dev",

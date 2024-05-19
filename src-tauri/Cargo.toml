@@ -6,7 +6,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [package]
 name = "dnd_sheet_tauri"
-version = "0.0.0-alpha1"
+version = "0.0.0-alpha2"
 description = "A Tauri App"
 authors = ["Kinsteen"]
 edition = "2021"

@@ -27,11 +27,9 @@
   let numPickBackground = 0
   let skills = []
 
-  let tempChecked = {
-    class: {},
-    race: {},
-    background: {},
-  }
+  let pickedSkillsClass = []
+  let pickedSkillsRace = []
+  let pickedSkillsBackground = []
 
   let characterName = ''
   let className = 'undefined'
@@ -156,25 +154,20 @@
     </div>
   </div>
   <div>
-    <table>
+    <table class="abilities-table">
       <tr>
-        <th>Ability name</th>
-        <th>
-          Base value
-        </th>
-        <th>
-          Calculated value
-        </th>
+        <th class="ability-name">Ability name</th>
+        <th class="base-value">Base value</th>
+        <th class="calculated-value">Calculated value</th>
       </tr>
     {#each abilities as ability}
       <tr>
         <td style="text-align: end;">{$_(`abilities.${ability.name}`)}</td>
         <td>
-          <input bind:value={abilitiesValues[ability.name]} type="number" min=0 max=20
+          <input class="text-input" bind:value={abilitiesValues[ability.name]} type="number" min=0 max=20
           on:input={(e) => {
             invoke("calculate_ability", {name: ability.name, baseValue: abilitiesValues[ability.name], className: className, raceName: raceName})
             .then(r => {
-              console.log(r)
               calculatedAbilitiesValues[ability.name] = r
             })
             .catch(e => {
@@ -183,7 +176,11 @@
           }}/>
         </td>
         <td>
-          10
+          {#if calculatedAbilitiesValues[ability.name]}
+            {calculatedAbilitiesValues[ability.name].total}
+          {:else}
+            Not calculated yet
+          {/if}
         </td>
       </tr>
     {/each}
@@ -193,21 +190,21 @@
     Skills from your class: (pick {numPickClass})
     {#each skillsClass as skill}
       <div>
-        <input type="checkbox" bind:checked={tempChecked["class"][skill]} />
+        <input type="checkbox" bind:group={pickedSkillsClass} value={skill} />
         <span class="skill-class">{$_(`skills.${skill}`)}</span>
       </div>
     {/each}
     Skills from your race: (pick {numPickRace})
     {#each skillsRace as skill}
       <div>
-        <input type="checkbox" bind:checked={tempChecked["race"][skill]} />
+        <input type="checkbox" bind:group={pickedSkillsRace} value={skill} />
         <span class="skill-race">{$_(`skills.${skill}`)}</span>
       </div>
     {/each}
     Skills from your background: (pick {numPickBackground})
     {#each skillsBackground as skill}
       <div>
-        <input type="checkbox" bind:checked={tempChecked["background"][skill]} />
+        <input type="checkbox" bind:group={pickedSkillsBackground} value={skill} />
         <span class="skill-background">{$_(`skills.${skill}`)}</span>
       </div>
     {/each}
@@ -218,25 +215,12 @@
     </div>
   {/if}
   <button on:click={() => {
-    let checked = {}
-
-    let mapChecked = (key) => {
-      Object.keys(tempChecked[key]).forEach(skill => {
-        let val = tempChecked[key][skill]
-  
-        if (!checked[key]) {
-          checked[key] = []
-        }
-
-        if (val) {
-          checked[key].push(skill)
-        }
-      })
+    let checked = {
+      class: pickedSkillsClass,
+      race: pickedSkillsRace,
+      background: pickedSkillsBackground
     }
 
-    mapChecked('class')
-    mapChecked('race')
-    mapChecked('background')
     // console.log(Object.fromEntries(Object.entries(skillsChecked).filter(([k,v]) => console.log(v))))
     invoke("create_sheet", {
       characterName: characterName,
@@ -245,6 +229,7 @@
       healthSystemMean: healthMean == "mean",
       abilities: abilitiesValues,
       skills: checked,
+      homebrews: homebrewsChecked,
     }).then(() => {
       errorMessage.set('')
     }).catch(e => {
@@ -254,23 +239,44 @@
 </div>
 
 <style>
-  .header {
-    display: flex;
-    gap: .5rem;
-    margin: .75rem;
-
-    & > button {
-      border: 0;
-      cursor: pointer;
-      background-color: transparent;
-    }
-  }
-
   .text-input {
     border: 2px solid black;
 
     &:focus-visible {
       border-radius: 0;
+    }
+  }
+
+  .abilities-table {
+    width: min(100%, 30rem);
+    border: 2px solid black;
+    border-collapse: collapse;
+    /* TODO center */
+
+    & td {
+      padding: .25rem;
+    }
+    
+    & tr > th {
+      border: 2px solid black;
+    }
+
+    & .ability-name {
+      width: 10rem;
+    }
+
+    & .base-value {
+      width: 0; /* Min size possible, so it's the input that tells */
+    }
+
+    & input {
+      margin: auto;
+      width: 3em;
+    }
+
+    & td:has(input) {
+      display:flex;
+      align-items: center;
     }
   }
 

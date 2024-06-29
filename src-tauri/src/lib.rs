@@ -183,21 +183,8 @@ async fn create_sheet(
     health_system_mean: bool,
     abilities: HashMap<String, i32>,
     skills: HashMap<String, Vec<String>>,
+    homebrews: Vec<String>,
 ) -> Result<(), String> {
-    // read_class!([&class, class_data] => {
-    //     if class_data.is_none() {
-    //         eprintln!("Class doesn't exists!");
-    //         return Err("Class doesn't exists!".to_string());
-    //     }
-    // });
-
-    // read_race!([&race, race_data] => {
-    //     if race_data.is_none() {
-    //         eprintln!("Race doesn't exists!");
-    //         return Err("Race doesn't exists!".to_string());
-    //     }
-    // });
-
     let mut builder = CharacterSheetBuilder::new();
     builder = builder.name(character_name);
     builder = builder.class(Class {
@@ -223,10 +210,14 @@ async fn create_sheet(
         builder = builder.ability(ability, score.to_owned());
     }
 
-    for (_source, skills) in skills {
+    for (source, skills) in skills {
         for skill in skills {
-            builder = builder.skill(skill);
+            builder = builder.skill_source(source.clone(), skill);
         }
+    }
+
+    for homebrew in homebrews {
+        builder = builder.homebrew(homebrew);
     }
 
     builder.can_build()?;

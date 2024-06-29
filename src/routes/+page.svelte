@@ -58,7 +58,6 @@
   loadSheet()
 
   onMount(() => {
-    // TODO test after onMount
     listen('reload-sheet', (event) => {
       console.log("Reloading sheet because backend said so")
       loadSheet()
@@ -71,17 +70,17 @@
 </script>
 
 <div style="display: flex; align-items: center; justify-content: space-between;">
-  <h1 style="text-transform: uppercase;">DnD Tracker</h1>
+  <h1 style="text-transform: uppercase; margin: .5em;">DnD Tracker</h1>
   <div style="display: flex; align-items: center; gap: .25rem">
     <button popovertarget="translations-popover"><Icon path={mdiTranslate} color="black" /></button>
-    <div popover="auto" id="translations-popover" style="position:absolute; margin-right: .25rem; margin-left: auto; top: 3rem">
+    <div popover="auto" id="translations-popover" style="position:absolute; margin-right: 1rem; margin-left: auto; top: 4rem">
       {#each $locales as l}
       <button on:click={() => {
         $locale = l
       }}>{l}</button>
       {/each}
     </div>
-    <a href="/settings"><Icon path={mdiCog} color="black" /></a>
+    <a style="margin: .75rem" href="/settings"><Icon path={mdiCog} color="black" size={1.3} /></a>
   </div>
 </div>
 
@@ -152,7 +151,6 @@
           });
         }}>{$_("create_char")}</button
       > -->
-      <a href="/create-character">{$_("create_char")}</a>
       <button on:click={() => {
         appDataDir().then(path => {
           console.log(path)

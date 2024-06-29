@@ -51,6 +51,7 @@
         "harness_divine_power": "Harness divine power"
     },
     "settings": {
+        "title": "Paramètres",
         "characters": "Personnages",
         "homebrews": "Homebrews"
     },

@@ -6,6 +6,18 @@
   --dark-main-background-color: #111;
 }
 
+.header {
+  display: flex;
+  gap: .5rem;
+  margin: .75rem;
+
+  & > button {
+    border: 0;
+    cursor: pointer;
+    background-color: transparent;
+  }
+}
+
 @font-face {
   font-family: Oxygen;
   src: url(Oxygen-Regular.ttf);

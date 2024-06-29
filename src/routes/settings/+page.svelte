@@ -1,7 +1,9 @@
 <script>
   import Card from "$lib/Card.svelte";
 import { invoke } from "@tauri-apps/api/core";
-  import { _, locale, locales} from 'svelte-i18n';
+  import { _ } from 'svelte-i18n';
+  import Icon from 'mdi-svelte';
+  import { mdiArrowLeft } from '@mdi/js';
 
 
   let homebrews = {
@@ -48,8 +50,8 @@ import { invoke } from "@tauri-apps/api/core";
   <div class="header">
     <button on:click={() => {
       window.history.back();
-    }}>Back</button>
-    <h1>Settings</h1>
+    }}><Icon path={mdiArrowLeft} size={1.3} /></button>
+    <h1>{$_("settings.title")}</h1>
   </div>
 
   <!-- <h2>Homebrew content</h2>
@@ -104,9 +106,11 @@ import { invoke } from "@tauri-apps/api/core";
       </Card>
     </div>
   {/each}
+  <a href="/create-character">Create a character</a>
 
   <h2>{$_("settings.homebrews")}</h2>
   {#each Object.keys(homebrews) as key}
+  <div style="padding: 1rem">
     <Card title={$_(`homebrew.${key}`)}>
       <div class="homebrew-card">
         <div>
@@ -138,12 +142,14 @@ import { invoke } from "@tauri-apps/api/core";
         <div>
           Used by:
           <ul>
-            <li>Test 1</li><!-- TODO -->
-            <li>Test 2</li>
+            <li>Placeholder 1</li><!-- TODO -->
+            <li>Placeholder 2</li>
           </ul>
         </div>
       </div>
     </Card>
+  </div>
+
   {/each}
 </div>
 
@@ -169,14 +175,5 @@ import { invoke } from "@tauri-apps/api/core";
 
   .homebrew-card {
     display: flex;
-  }
-
-  .homebrew-content {
-    background-color: rgb(212, 212, 212);
-    border: 2px solid black;
-    border-radius: 1rem;
-    width: fit-content;
-    padding: 1rem;
-    margin: 1rem;
   }
 </style>

@@ -339,7 +339,7 @@ pub async fn calculate_ability(
     });
     builder = builder.health_system(character_sheet::HealthSystem::Mean(true));
     builder = builder.race(Race { name: race_name });
-    let sheet = builder.build().unwrap();
+    let sheet = builder.build()?;
     Ok(AbilitiesDataUI {
         name: name.clone(),
         modifier: calculate_modifier_string(&name, &sheet).unwrap(),

@@ -27,7 +27,7 @@ message CharacterSheet {
 
   repeated Counter counters = 100;
 
-  // repeated string using_homebrew = 200; // TODO ?
+  repeated string using_homebrew = 200;
 }
 
 message HealthRolls {

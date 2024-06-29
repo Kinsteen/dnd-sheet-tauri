@@ -1,9 +1,9 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use dnd_protos::protos::character_sheet::*;
 use dnd_protos::protos::*;
 
-use crate::{calculators::health::get_max_health, read_class, read_race};
+use crate::{calculators::health::get_max_health, loaders::homebrew::{HomebrewElement, DATA_CACHE}, read_class, read_race};
 
 #[derive(Default, Clone)]
 pub struct CharacterSheetBuilder {
@@ -17,6 +17,7 @@ pub struct CharacterSheetBuilder {
     skills: Vec<String>,
     custom_languages: Vec<String>,
     counters: Vec<Counter>,
+    homebrews: Vec<String>,
 }
 
 impl CharacterSheetBuilder {
@@ -64,7 +65,8 @@ impl CharacterSheetBuilder {
     }
 
     pub fn skill_source(mut self, source: impl Into<String>, skill: impl Into<String>) -> Self{
-        todo!()
+        self.skills.push(skill.into());
+        self
     }
 
     pub fn custom_language(mut self, language: impl Into<String>) -> Self {
@@ -82,6 +84,11 @@ impl CharacterSheetBuilder {
 
     pub fn health_system(mut self, system: HealthSystem) -> Self {
         _ = self.health_system.insert(system);
+        self
+    }
+
+    pub fn homebrew(mut self, homebrew: impl Into<String>) -> Self {
+        self.homebrews.push(homebrew.into());
         self
     }
 
@@ -115,6 +122,43 @@ impl CharacterSheetBuilder {
         if self.health_system.is_none() {
             return Err("You have to pick a health system.".to_string());
         }
+
+        // TODO check homebrew correspondance.
+        // Reject if too many homebrews selected, or too few
+        // Do we need to reject, if we can calculate here every homebrew used?
+        let mut used_homebrews = HashSet::new();
+
+        {
+            let class_cache = DATA_CACHE.classes.read();
+            for class in &self.classes {
+                for HomebrewElement {data, source} in class_cache.values() {
+                    if class.name.eq(&data.name) {
+                        used_homebrews.insert(source.clone());
+                    }
+                }
+            }
+        }
+
+        {
+            let race_cache = DATA_CACHE.races.read();
+            for HomebrewElement {data, source} in race_cache.values() {
+                if self.race.as_ref().unwrap().name.eq(&data.name) {
+                    used_homebrews.insert(source.clone());
+                }
+            }
+        }
+
+        {
+            let skill_cache = DATA_CACHE.skills.read();
+            for HomebrewElement {data, source} in skill_cache.values() {
+                if self.skills.contains(&data.name) {
+                    used_homebrews.insert(source.clone());
+                }
+            }
+        }
+
+        // TODO background
+        // Why is it not stored in character sheet?
 
         Ok(())
     }
@@ -155,6 +199,7 @@ impl CharacterSheetBuilder {
             custom_languages: self.custom_languages,
             counters: self.counters,
             health_system: self.health_system,
+            using_homebrew: self.homebrews,
         };
 
         sheet.health = get_max_health(&sheet);
